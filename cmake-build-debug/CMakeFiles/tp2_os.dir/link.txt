@@ -1,0 +1,1 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/tp2_os.dir/client/client_thread.c.o CMakeFiles/tp2_os.dir/client/main.c.o CMakeFiles/tp2_os.dir/server/main.c.o CMakeFiles/tp2_os.dir/server/server_thread.c.o  -o tp2_os 

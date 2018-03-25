@@ -1,0 +1,3 @@
+/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir
