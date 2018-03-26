@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /cygdrive/c/Users/Eddy/.CLion2017.3/system/cygwin_cmake/bin/cmake.exe
+CMAKE_COMMAND = /Applications/CLion.app/Contents/bin/cmake/bin/cmake
 
 # The command to remove a file.
-RM = /cygdrive/c/Users/Eddy/.CLion2017.3/system/cygwin_cmake/bin/cmake.exe -E remove -f
+RM = /Applications/CLion.app/Contents/bin/cmake/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os
+CMAKE_SOURCE_DIR = /Users/eduardvoiculescu/Documents/GitHub/tp2_os
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/tp2_os.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/tp2_os.dir/flags.make
 
 CMakeFiles/tp2_os.dir/client/client_thread.c.o: CMakeFiles/tp2_os.dir/flags.make
 CMakeFiles/tp2_os.dir/client/client_thread.c.o: ../client/client_thread.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/tp2_os.dir/client/client_thread.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/tp2_os.dir/client/client_thread.c.o   -c /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/client_thread.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/tp2_os.dir/client/client_thread.c.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/tp2_os.dir/client/client_thread.c.o   -c /Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/client_thread.c
 
 CMakeFiles/tp2_os.dir/client/client_thread.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/tp2_os.dir/client/client_thread.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/client_thread.c > CMakeFiles/tp2_os.dir/client/client_thread.c.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/client_thread.c > CMakeFiles/tp2_os.dir/client/client_thread.c.i
 
 CMakeFiles/tp2_os.dir/client/client_thread.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/tp2_os.dir/client/client_thread.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/client_thread.c -o CMakeFiles/tp2_os.dir/client/client_thread.c.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/client_thread.c -o CMakeFiles/tp2_os.dir/client/client_thread.c.s
 
 CMakeFiles/tp2_os.dir/client/client_thread.c.o.requires:
 
@@ -83,16 +83,16 @@ CMakeFiles/tp2_os.dir/client/client_thread.c.o.provides.build: CMakeFiles/tp2_os
 
 CMakeFiles/tp2_os.dir/client/main.c.o: CMakeFiles/tp2_os.dir/flags.make
 CMakeFiles/tp2_os.dir/client/main.c.o: ../client/main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/tp2_os.dir/client/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/tp2_os.dir/client/main.c.o   -c /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/tp2_os.dir/client/main.c.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/tp2_os.dir/client/main.c.o   -c /Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/main.c
 
 CMakeFiles/tp2_os.dir/client/main.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/tp2_os.dir/client/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/main.c > CMakeFiles/tp2_os.dir/client/main.c.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/main.c > CMakeFiles/tp2_os.dir/client/main.c.i
 
 CMakeFiles/tp2_os.dir/client/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/tp2_os.dir/client/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/main.c -o CMakeFiles/tp2_os.dir/client/main.c.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/main.c -o CMakeFiles/tp2_os.dir/client/main.c.s
 
 CMakeFiles/tp2_os.dir/client/main.c.o.requires:
 
@@ -107,16 +107,16 @@ CMakeFiles/tp2_os.dir/client/main.c.o.provides.build: CMakeFiles/tp2_os.dir/clie
 
 CMakeFiles/tp2_os.dir/server/main.c.o: CMakeFiles/tp2_os.dir/flags.make
 CMakeFiles/tp2_os.dir/server/main.c.o: ../server/main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/tp2_os.dir/server/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/tp2_os.dir/server/main.c.o   -c /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/tp2_os.dir/server/main.c.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/tp2_os.dir/server/main.c.o   -c /Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/main.c
 
 CMakeFiles/tp2_os.dir/server/main.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/tp2_os.dir/server/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/main.c > CMakeFiles/tp2_os.dir/server/main.c.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/main.c > CMakeFiles/tp2_os.dir/server/main.c.i
 
 CMakeFiles/tp2_os.dir/server/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/tp2_os.dir/server/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/main.c -o CMakeFiles/tp2_os.dir/server/main.c.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/main.c -o CMakeFiles/tp2_os.dir/server/main.c.s
 
 CMakeFiles/tp2_os.dir/server/main.c.o.requires:
 
@@ -131,16 +131,16 @@ CMakeFiles/tp2_os.dir/server/main.c.o.provides.build: CMakeFiles/tp2_os.dir/serv
 
 CMakeFiles/tp2_os.dir/server/server_thread.c.o: CMakeFiles/tp2_os.dir/flags.make
 CMakeFiles/tp2_os.dir/server/server_thread.c.o: ../server/server_thread.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/tp2_os.dir/server/server_thread.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/tp2_os.dir/server/server_thread.c.o   -c /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/server_thread.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/tp2_os.dir/server/server_thread.c.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/tp2_os.dir/server/server_thread.c.o   -c /Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/server_thread.c
 
 CMakeFiles/tp2_os.dir/server/server_thread.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/tp2_os.dir/server/server_thread.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/server_thread.c > CMakeFiles/tp2_os.dir/server/server_thread.c.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/server_thread.c > CMakeFiles/tp2_os.dir/server/server_thread.c.i
 
 CMakeFiles/tp2_os.dir/server/server_thread.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/tp2_os.dir/server/server_thread.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/server_thread.c -o CMakeFiles/tp2_os.dir/server/server_thread.c.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/server_thread.c -o CMakeFiles/tp2_os.dir/server/server_thread.c.s
 
 CMakeFiles/tp2_os.dir/server/server_thread.c.o.requires:
 
@@ -163,17 +163,17 @@ tp2_os_OBJECTS = \
 # External object files for target tp2_os
 tp2_os_EXTERNAL_OBJECTS =
 
-tp2_os.exe: CMakeFiles/tp2_os.dir/client/client_thread.c.o
-tp2_os.exe: CMakeFiles/tp2_os.dir/client/main.c.o
-tp2_os.exe: CMakeFiles/tp2_os.dir/server/main.c.o
-tp2_os.exe: CMakeFiles/tp2_os.dir/server/server_thread.c.o
-tp2_os.exe: CMakeFiles/tp2_os.dir/build.make
-tp2_os.exe: CMakeFiles/tp2_os.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable tp2_os.exe"
+tp2_os: CMakeFiles/tp2_os.dir/client/client_thread.c.o
+tp2_os: CMakeFiles/tp2_os.dir/client/main.c.o
+tp2_os: CMakeFiles/tp2_os.dir/server/main.c.o
+tp2_os: CMakeFiles/tp2_os.dir/server/server_thread.c.o
+tp2_os: CMakeFiles/tp2_os.dir/build.make
+tp2_os: CMakeFiles/tp2_os.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable tp2_os"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/tp2_os.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-CMakeFiles/tp2_os.dir/build: tp2_os.exe
+CMakeFiles/tp2_os.dir/build: tp2_os
 
 .PHONY : CMakeFiles/tp2_os.dir/build
 
@@ -189,6 +189,6 @@ CMakeFiles/tp2_os.dir/clean:
 .PHONY : CMakeFiles/tp2_os.dir/clean
 
 CMakeFiles/tp2_os.dir/depend:
-	cd /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/eduardvoiculescu/Documents/GitHub/tp2_os /Users/eduardvoiculescu/Documents/GitHub/tp2_os /Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug /Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug /Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/tp2_os.dir/depend
 

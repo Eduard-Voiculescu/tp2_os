@@ -3,10 +3,6 @@ project(tp2_os)
 
 set(CMAKE_CXX_STANDARD 11)
 
-include_directories(.)
-include_directories(client)
-include_directories(server)
-
 add_executable(tp2_os
         client/client_thread.c
         client/client_thread.h
