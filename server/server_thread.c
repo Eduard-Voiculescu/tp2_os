@@ -51,7 +51,22 @@ unsigned int request_processed = 0;
 unsigned int clients_ended = 0;
 
 // TODO: Ajouter vos structures de données partagées, ici.
+/*
+ * Initialisation of variables for the Banker's Algorithm
+ * Inspiration de https: https://www.geeksforgeeks.org/program-bankers-algorithm-set-1-safety-algorithm/
+ *
+ * Notez que available est un "tableau de 1d" --> m resouces
+ * et que max, allocation et need sont des "tableaux de 2d" --> n process and m resources
+ *
+ * */
 int *available;
+int **max;
+int **allocation;
+int **need;
+
+/* Nombre de clients reçu lors BEG */
+// TO KEEP OR NOT TO KEEP ??????? maybe make it extern ? and put in server_thread
+unsigned int nb_clients;
 
 static void sigint_handler(int signum) {
   // Code terminaison.
@@ -67,12 +82,52 @@ st_init ()
   // Initialise le nombre de clients connecté.
   nb_registered_clients = 0;
 
-  // TODO
-
   // Attend la connection d'un client et initialise les structures pour
   // l'algorithme du banquier.
 
-  // END TODO
+  /* Initisalisation de structures de donnees pour l'algo du banquier */
+
+  available = malloc(nb_resources * sizeof(int));
+  max = malloc(nb_registered_clients * sizeof(int));
+  allocation = malloc(nb_registered_clients * sizeof(int));
+  need = malloc(nb_registered_clients * sizeof(int));
+
+  /* If there are no resources and no clients */
+  if (available == NULL || max == NULL || allocation == NULL || need == NULL) {
+      perror("No ressources and no clients -- null pointer exception");
+  }
+
+  /*
+   * Nous n'avons pas fait de double boucle for, car la complexité aurait été
+   * de n^2 comparativement à une complexité de 2n
+   */
+
+  for (int i = 0; i < nb_resources; i++) {
+      available[i] = nb_resources; // tous les i on nb_resources
+  }
+
+  for (int j = 0; j < nb_registered_clients; j++) {
+      max[j] = malloc(nb_resources * sizeof(int));
+      allocation[j] = malloc(nb_resources * sizeof(int));
+      need[j] = malloc(nb_resources * sizeof(int));
+
+      /* Manage is there are no resources */
+      if (max[j] == NULL || allocation[j] == NULL || need[j] == NULL) {
+          perror("No resources -- null pointer exception");
+      }
+
+      /*
+       * Per default, we set max[i][j], allocation [i][j] and need [i][j]
+       * to 0 as proces Pi is currently allocated ‘k (which is 0)’ instances of
+       * resource type Rj
+       */
+      for (int i = 0; i < nb_resources; i++) {
+          max[i][j] = 0; // 'k' = 0
+          allocation[i][j] = 0; // 'k' = 0
+          need[i][j] = 0; // 'k' = 0
+      }
+
+  }
 }
 
 void
