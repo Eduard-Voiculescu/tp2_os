@@ -17,6 +17,9 @@
 
 #include <time.h>
 
+/* Add the protocol.h */
+#include "../protocol.h"
+
 enum { NUL = '\0' };
 
 enum {
@@ -63,10 +66,6 @@ int *available;
 int **max;
 int **allocation;
 int **need;
-
-/* Nombre de clients reçu lors BEG */
-// TO KEEP OR NOT TO KEEP ??????? maybe make it extern ? and put in server_thread
-unsigned int nb_clients;
 
 static void sigint_handler(int signum) {
   // Code terminaison.
