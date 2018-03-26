@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/client_thread.c
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/client_thread.c
 stdio.h
 -
 stdlib.h
@@ -16,7 +16,7 @@ string.h
 unistd.h
 -
 client_thread.h
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/client_thread.h
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/client_thread.h
 netdb.h
 -
 arpa/inet.h
@@ -26,7 +26,7 @@ netinet/in.h
 sys/socket.h
 -
 
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/client_thread.h
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/client_thread.h
 stdbool.h
 -
 stdio.h
@@ -38,23 +38,23 @@ pthread.h
 unistd.h
 -
 
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/main.c
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/main.c
 stdlib.h
 -
 client_thread.h
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/client_thread.h
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/client_thread.h
 
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/main.c
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/main.c
 stdlib.h
 -
 server_thread.h
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/server_thread.h
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/server_thread.h
 pthread.h
 -
 
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/server_thread.c
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/server_thread.c
 server_thread.h
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/server_thread.h
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/server_thread.h
 netinet/in.h
 -
 netdb.h
@@ -78,7 +78,7 @@ signal.h
 time.h
 -
 
-/Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/server_thread.h
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/server_thread.h
 stdbool.h
 -
 stdio.h
