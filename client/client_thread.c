@@ -9,7 +9,7 @@
 #include "client_thread.h"
 
 // Socket library
-//#include <netdb.h>
+#include <netdb.h>
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
