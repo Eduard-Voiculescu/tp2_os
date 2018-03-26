@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -168,14 +168,15 @@ st_code (void *param)
 void
 st_open_socket (int port_number)
 {
-  server_socket_fd = socket (AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-  if (server_socket_fd < 0)
-    perror ("ERROR opening socket");
-
-  if (setsockopt(server_socket_fd, SOL_SOCKET, SO_REUSEPORT, &(int){ 1 }, sizeof(int)) < 0) {
-    perror("setsockopt()");
-    exit(1);
-  }
+#ifndef SOCK_NONBLOCK
+    server_socket_fd = socket (AF_INET, SOCK_STREAM, 0);
+    #else
+    server_socket_fd = socket (AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    #endif
+    if (server_socket_fd < 0) {
+        perror ("ERROR opening socket");
+        exit(1);
+    }
 
   struct sockaddr_in serv_addr;
   memset (&serv_addr, 0, sizeof (serv_addr));
