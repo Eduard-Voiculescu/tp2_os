@@ -11,7 +11,9 @@ add_executable(tp2_os
         server/server_thread.c
         server/server_thread.h
         AUTHOR.md
+        CMakeLists.txt
         GNUmakefile
+        protocol.h
         rapport.tex
         README.md
         tp2.tex)
