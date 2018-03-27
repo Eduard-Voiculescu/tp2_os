@@ -127,7 +127,6 @@ st_init() {
             allocation[i][j] = 0; // 'k' = 0
             need[i][j] = 0; // 'k' = 0
         }
-
     }
 
 
@@ -157,6 +156,21 @@ st_process_requests(server_thread *st, int socket_fd) {
             /* Appeler st_signal pour fermer les threads et free toutes les ressources */
             st_signal();
             exit(0); // Exit successful
+        }
+
+        /* Pour la commande ACK */
+        if(cmd[0] == 'A' && cmd[1] == 'C' && cmd[2] == 'K') {
+
+        }
+
+        /* Pour la commande ERR */
+        if(cmd[0] == 'E' && cmd[1] == 'R' && cmd[2] == 'R') {
+
+        }
+
+        /* Pour la commande WAIT */
+        if(cmd[0] == 'W' && cmd[1] == 'A' && cmd[2] == 'I' && cmd[3] == 'T') {
+
         }
 
         printf("Thread %d received the command: %s%s", st->id, cmd, args);
