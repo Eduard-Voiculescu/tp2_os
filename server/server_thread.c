@@ -110,16 +110,17 @@ st_init ()
       allocation[j] = malloc(nb_resources * sizeof(int));
       need[j] = malloc(nb_resources * sizeof(int));
 
-      /* Manage is there are no resources */
+      /* Manage if there are no resources */
       if (max[j] == NULL || allocation[j] == NULL || need[j] == NULL) {
           perror("No resources -- null pointer exception");
       }
 
       /*
-       * Per default, we set max[i][j], allocation [i][j] and need [i][j]
+       * By default, we set max[i][j], allocation [i][j] and need [i][j]
        * to 0 as proces Pi is currently allocated ‘k (which is 0)’ instances of
        * resource type Rj
        */
+
       for (int i = 0; i < nb_resources; i++) {
           max[i][j] = 0; // 'k' = 0
           allocation[i][j] = 0; // 'k' = 0

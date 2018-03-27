@@ -44,6 +44,8 @@ stdlib.h
 client_thread.h
 /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/client_thread.h
 
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/protocol.h
+
 /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/main.c
 stdlib.h
 -
@@ -77,6 +79,8 @@ signal.h
 -
 time.h
 -
+../protocol.h
+/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/protocol.h
 
 /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/server_thread.h
 stdbool.h

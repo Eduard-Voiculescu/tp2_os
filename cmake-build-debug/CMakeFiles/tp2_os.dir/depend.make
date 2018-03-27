@@ -10,6 +10,7 @@ CMakeFiles/tp2_os.dir/client/main.c.o: ../client/main.c
 CMakeFiles/tp2_os.dir/server/main.c.o: ../server/main.c
 CMakeFiles/tp2_os.dir/server/main.c.o: ../server/server_thread.h
 
+CMakeFiles/tp2_os.dir/server/server_thread.c.o: ../protocol.h
 CMakeFiles/tp2_os.dir/server/server_thread.c.o: ../server/server_thread.c
 CMakeFiles/tp2_os.dir/server/server_thread.c.o: ../server/server_thread.h
 
