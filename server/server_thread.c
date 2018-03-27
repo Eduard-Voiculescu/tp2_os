@@ -129,7 +129,8 @@ st_init() {
         }
     }
 
-
+    /* Initialiser le server */
+    struct sockaddr_in server_addr;
 
 }
 
@@ -189,7 +190,7 @@ void
 st_signal() {
     // TODO: Remplacer le contenu de cette fonction
 
-
+    
 
     // TODO end
 }
