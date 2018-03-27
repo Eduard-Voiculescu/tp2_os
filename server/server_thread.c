@@ -20,12 +20,14 @@
 /* Add the protocol.h */
 #include "../protocol.h"
 
-enum { NUL = '\0' };
+enum {
+    NUL = '\0'
+};
 
 enum {
-  /* Configuration constants.  */
-  max_wait_time = 30,
-  server_backlog_size = 5
+    /* Configuration constants.  */
+            max_wait_time = 30,
+    server_backlog_size = 5
 };
 
 unsigned int server_socket_fd;
@@ -68,152 +70,154 @@ int **allocation;
 int **need;
 
 static void sigint_handler(int signum) {
-  // Code terminaison.
-  accepting_connections = 0;
+    // Code terminaison.
+    accepting_connections = 0;
 }
 
 void
-st_init ()
-{
-  // Handle interrupt
-  signal(SIGINT, &sigint_handler);
+st_init() {
+    // Handle interrupt
+    signal(SIGINT, &sigint_handler);
 
-  // Initialise le nombre de clients connecté.
-  nb_registered_clients = 0;
+    // Initialise le nombre de clients connecté.
+    nb_registered_clients = 0;
 
-  // Attend la connection d'un client et initialise les structures pour
-  // l'algorithme du banquier.
+    // Attend la connection d'un client et initialise les structures pour
+    // l'algorithme du banquier.
 
-  /* Initisalisation de structures de donnees pour l'algo du banquier */
+    /* Initisalisation de structures de données pour l'algo du banquier */
 
-  available = malloc(nb_resources * sizeof(int));
-  max = malloc(nb_registered_clients * sizeof(int));
-  allocation = malloc(nb_registered_clients * sizeof(int));
-  need = malloc(nb_registered_clients * sizeof(int));
+    available = malloc(nb_resources * sizeof(int));
+    max = malloc(nb_registered_clients * sizeof(int));
+    allocation = malloc(nb_registered_clients * sizeof(int));
+    need = malloc(nb_registered_clients * sizeof(int));
 
-  /* If there are no resources and no clients */
-  if (available == NULL || max == NULL || allocation == NULL || need == NULL) {
-      perror("No ressources and no clients -- null pointer exception");
-  }
-
-  /*
-   * Nous n'avons pas fait de double boucle for, car la complexité aurait été
-   * de n^2 comparativement à une complexité de 2n
-   */
-
-  for (int i = 0; i < nb_resources; i++) {
-      available[i] = nb_resources; // tous les i on nb_resources
-  }
-
-  for (int j = 0; j < nb_registered_clients; j++) {
-      max[j] = malloc(nb_resources * sizeof(int));
-      allocation[j] = malloc(nb_resources * sizeof(int));
-      need[j] = malloc(nb_resources * sizeof(int));
-
-      /* Manage if there are no resources */
-      if (max[j] == NULL || allocation[j] == NULL || need[j] == NULL) {
-          perror("No resources -- null pointer exception");
-      }
-
-      /*
-       * By default, we set max[i][j], allocation [i][j] and need [i][j]
-       * to 0 as proces Pi is currently allocated ‘k (which is 0)’ instances of
-       * resource type Rj
-       */
-
-      for (int i = 0; i < nb_resources; i++) {
-          max[i][j] = 0; // 'k' = 0
-          allocation[i][j] = 0; // 'k' = 0
-          need[i][j] = 0; // 'k' = 0
-      }
-
-  }
-}
-
-void
-st_process_requests (server_thread * st, int socket_fd)
-{
-  // TODO: Remplacer le contenu de cette fonction
-  FILE *socket_r = fdopen (socket_fd, "r");
-  FILE *socket_w = fdopen (socket_fd, "w");
-
-  while (true)
-  {
-    char cmd[4] = {NUL, NUL, NUL, NUL};
-    if (!fread (cmd, 3, 1, socket_r))
-      break;
-    char *args = NULL; size_t args_len = 0;
-    ssize_t cnt = getline (&args, &args_len, socket_r);
-    if (!args || cnt < 1 || args[cnt - 1] != '\n')
-    {
-      printf ("Thread %d received incomplete cmd=%s!\n", st->id, cmd);
-      break;
+    /* If there are no resources and no clients */
+    if (available == NULL || max == NULL || allocation == NULL || need == NULL) {
+        perror("No ressources and no clients -- null pointer exception");
     }
 
-    printf ("Thread %d received the command: %s%s", st->id, cmd, args);
+    /*
+     * Nous n'avons pas fait de double boucle for, car la complexité aurait été
+     * de n^2 comparativement à une complexité de 2n
+     */
 
-    fprintf (socket_w, "ERR Unknown command\n");
-    free (args);
-  }
+    for (int i = 0; i < nb_resources; i++) {
+        available[i] = nb_resources; // tous les i on nb_resources
+    }
 
-  fclose (socket_r);
-  fclose (socket_w);
-  // TODO end
+    for (int j = 0; j < nb_registered_clients; j++) {
+        max[j] = malloc(nb_resources * sizeof(int));
+        allocation[j] = malloc(nb_resources * sizeof(int));
+        need[j] = malloc(nb_resources * sizeof(int));
+
+        /* Manage if there are no resources */
+        if (max[j] == NULL || allocation[j] == NULL || need[j] == NULL) {
+            perror("No resources -- null pointer exception");
+        }
+
+        /*
+         * By default, we set max[i][j], allocation [i][j] and need [i][j]
+         * to 0 as proces Pi is currently allocated ‘k (which is 0)’ instances of
+         * resource type Rj
+         */
+
+        for (int i = 0; i < nb_resources; i++) {
+            max[i][j] = 0; // 'k' = 0
+            allocation[i][j] = 0; // 'k' = 0
+            need[i][j] = 0; // 'k' = 0
+        }
+
+    }
+
+
+
+}
+
+void
+st_process_requests(server_thread *st, int socket_fd) {
+    // TODO: Remplacer le contenu de cette fonction
+    FILE *socket_r = fdopen(socket_fd, "r");
+    FILE *socket_w = fdopen(socket_fd, "w");
+
+    while (true) {
+        char cmd[4] = {NUL, NUL, NUL, NUL};
+        if (!fread(cmd, 3, 1, socket_r))
+            break;
+        char *args = NULL;
+        size_t args_len = 0;
+        ssize_t cnt = getline(&args, &args_len, socket_r);
+        if (!args || cnt < 1 || args[cnt - 1] != '\n') {
+            printf("Thread %d received incomplete cmd=%s!\n", st->id, cmd);
+            break;
+        }
+
+        /* Pour la commande END 2*/
+        if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') {
+            /* Appeler st_signal pour fermer les threads et free toutes les ressources */
+            st_signal();
+            exit(0); // Exit successful
+        }
+
+        printf("Thread %d received the command: %s%s", st->id, cmd, args);
+
+        fprintf(socket_w, "ERR Unknown command\n");
+        free(args);
+    }
+
+    fclose(socket_r);
+    fclose(socket_w);
+    // TODO end
 }
 
 
 void
-st_signal ()
-{
-  // TODO: Remplacer le contenu de cette fonction
+st_signal() {
+    // TODO: Remplacer le contenu de cette fonction
 
 
 
-  // TODO end
+    // TODO end
 }
 
 int st_wait() {
-  struct sockaddr_in thread_addr;
-  socklen_t socket_len = sizeof (thread_addr);
-  int thread_socket_fd = -1;
-  int end_time = time (NULL) + max_wait_time;
+    struct sockaddr_in thread_addr;
+    socklen_t socket_len = sizeof(thread_addr);
+    int thread_socket_fd = -1;
+    int end_time = time(NULL) + max_wait_time;
 
-  while(thread_socket_fd < 0 && accepting_connections) {
-    thread_socket_fd = accept(server_socket_fd,
-        (struct sockaddr *)&thread_addr,
-        &socket_len);
-    if (time(NULL) >= end_time) {
-      break;
+    while (thread_socket_fd < 0 && accepting_connections) {
+        thread_socket_fd = accept(server_socket_fd,
+                                  (struct sockaddr *) &thread_addr,
+                                  &socket_len);
+        if (time(NULL) >= end_time) {
+            break;
+        }
     }
-  }
-  return thread_socket_fd;
+    return thread_socket_fd;
 }
 
 void *
-st_code (void *param)
-{
-  server_thread *st = (server_thread *) param;
+st_code(void *param) {
+    server_thread *st = (server_thread *) param;
 
-  int thread_socket_fd = -1;
+    int thread_socket_fd = -1;
 
-  // Boucle de traitement des requêtes.
-  while (accepting_connections)
-  {
-    // Wait for a I/O socket.
-    thread_socket_fd = st_wait();
-    if (thread_socket_fd < 0)
-    {
-      fprintf (stderr, "Time out on thread %d.\n", st->id);
-      continue;
+    // Boucle de traitement des requêtes.
+    while (accepting_connections) {
+        // Wait for a I/O socket.
+        thread_socket_fd = st_wait();
+        if (thread_socket_fd < 0) {
+            fprintf(stderr, "Time out on thread %d.\n", st->id);
+            continue;
+        }
+
+        if (thread_socket_fd > 0) {
+            st_process_requests(st, thread_socket_fd);
+            close(thread_socket_fd);
+        }
     }
-
-    if (thread_socket_fd > 0)
-    {
-      st_process_requests (st, thread_socket_fd);
-      close (thread_socket_fd);
-    }
-  }
-  return NULL;
+    return NULL;
 }
 
 
@@ -221,30 +225,29 @@ st_code (void *param)
 // Ouvre un socket pour le serveur.
 //
 void
-st_open_socket (int port_number)
-{
+st_open_socket(int port_number) {
 #ifndef SOCK_NONBLOCK
-    server_socket_fd = socket (AF_INET, SOCK_STREAM, 0);
-    #else
+    server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+#else
     server_socket_fd = socket (AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-    #endif
+#endif
     if (server_socket_fd < 0) {
-        perror ("ERROR opening socket");
+        perror("ERROR opening socket");
         exit(1);
     }
 
-  struct sockaddr_in serv_addr;
-  memset (&serv_addr, 0, sizeof (serv_addr));
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = INADDR_ANY;
-  serv_addr.sin_port = htons (port_number);
+    struct sockaddr_in serv_addr;
+    memset (&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_port = htons (port_number);
 
-  if (bind
-      (server_socket_fd, (struct sockaddr *) &serv_addr,
-       sizeof (serv_addr)) < 0)
-    perror ("ERROR on binding");
+    if (bind
+                (server_socket_fd, (struct sockaddr *) &serv_addr,
+                 sizeof(serv_addr)) < 0)
+        perror("ERROR on binding");
 
-  listen (server_socket_fd, server_backlog_size);
+    listen(server_socket_fd, server_backlog_size);
 }
 
 
@@ -254,21 +257,17 @@ st_open_socket (int port_number)
 // La branche else ne doit PAS être modifiée.
 //
 void
-st_print_results (FILE * fd, bool verbose)
-{
-  if (fd == NULL) fd = stdout;
-  if (verbose)
-  {
-    fprintf (fd, "\n---- Résultat du serveur ----\n");
-    fprintf (fd, "Requêtes acceptées: %d\n", count_accepted);
-    fprintf (fd, "Requêtes : %d\n", count_wait);
-    fprintf (fd, "Requêtes invalides: %d\n", count_invalid);
-    fprintf (fd, "Clients : %d\n", count_dispatched);
-    fprintf (fd, "Requêtes traitées: %d\n", request_processed);
-  }
-  else
-  {
-    fprintf (fd, "%d %d %d %d %d\n", count_accepted, count_wait,
-        count_invalid, count_dispatched, request_processed);
-  }
+st_print_results(FILE *fd, bool verbose) {
+    if (fd == NULL) fd = stdout;
+    if (verbose) {
+        fprintf(fd, "\n---- Résultat du serveur ----\n");
+        fprintf(fd, "Requêtes acceptées: %d\n", count_accepted);
+        fprintf(fd, "Requêtes : %d\n", count_wait);
+        fprintf(fd, "Requêtes invalides: %d\n", count_invalid);
+        fprintf(fd, "Clients : %d\n", count_dispatched);
+        fprintf(fd, "Requêtes traitées: %d\n", request_processed);
+    } else {
+        fprintf(fd, "%d %d %d %d %d\n", count_accepted, count_wait,
+                count_invalid, count_dispatched, request_processed);
+    }
 }
