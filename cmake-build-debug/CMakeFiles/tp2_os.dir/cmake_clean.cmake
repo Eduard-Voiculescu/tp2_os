@@ -4,7 +4,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/tp2_os.dir/server/main.c.o"
   "CMakeFiles/tp2_os.dir/server/server_thread.c.o"
   "tp2_os.pdb"
-  "tp2_os"
+  "tp2_os.exe"
+  "libtp2_os.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.

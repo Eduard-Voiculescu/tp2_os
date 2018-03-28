@@ -95,7 +95,7 @@ st_init() {
 
     /* Initisalisation de structures de données pour l'algo du banquier */
 
-    available = malloc(nb_resources * sizeof(int));
+    available = malloc(num_resources * sizeof(int));
     max = malloc(nb_registered_clients * sizeof(int));
     allocation = malloc(nb_registered_clients * sizeof(int));
     need = malloc(nb_registered_clients * sizeof(int));
@@ -110,14 +110,14 @@ st_init() {
      * de n^2 comparativement à une complexité de 2n
      */
 
-    for (int i = 0; i < nb_resources; i++) {
-        available[i] = nb_resources; // tous les i on nb_resources
+    for (int i = 0; i < num_resources; i++) {
+        available[i] = num_resources; // tous les i on nb_resources
     }
 
     for (int j = 0; j < nb_registered_clients; j++) {
-        max[j] = malloc(nb_resources * sizeof(int));
-        allocation[j] = malloc(nb_resources * sizeof(int));
-        need[j] = malloc(nb_resources * sizeof(int));
+        max[j] = malloc(num_resources * sizeof(int));
+        allocation[j] = malloc(num_resources * sizeof(int));
+        need[j] = malloc(num_resources * sizeof(int));
 
         /* Manage if there are no resources */
         if (max[j] == NULL || allocation[j] == NULL || need[j] == NULL) {
@@ -130,7 +130,7 @@ st_init() {
          * resource type Rj
          */
 
-        for (int i = 0; i < nb_resources; i++) {
+        for (int i = 0; i < num_resources; i++) {
             max[i][j] = 0; // 'k' = 0
             allocation[i][j] = 0; // 'k' = 0
             need[i][j] = 0; // 'k' = 0
