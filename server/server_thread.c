@@ -128,6 +128,16 @@ st_init() {
          * By default, we set max[i][j], allocation [i][j] and need [i][j]
          * to 0 as proces Pi is currently allocated ‘k (which is 0)’ instances of
          * resource type Rj
+         * (thank you: https://www.youtube.com/watch?v=T0FXvTHcYi4)
+         *
+         *      Max       Allocation     Available  Need
+         *    A B C D     A B C D       A B C D     Max - Allocation
+         * P0 0 0 1 2  P0 0 0 1 2       1 5 2 0
+         * P1 1 7 5 0  P1 1 0 0 0
+         * P2 2 3 5 6  P2 1 3 5 4
+         *
+         * After we have to determine the safe state.
+         * Available + Allocation = New Available
          */
 
         for (int i = 0; i < num_resources; i++) {
@@ -174,10 +184,13 @@ st_process_requests(server_thread *st, int socket_fd) {
          */
         int reponse[4]; // même longueur que la commande
 
+        /* Pour la commande INI */
+        if(cmd[0] == 'I' && cmd [1] == 'N' && cmd[2] == 'I') {
+
+        }
+
         /* Pour la commande END */
         if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') {
-            /* Appeler st_signal pour fermer les threads et free toutes les ressources */
-            st_signal();
             exit(0); // Exit successful
         }
 
