@@ -13,7 +13,6 @@ add_executable(tp2_os
         AUTHOR.md
         CMakeLists.txt
         GNUmakefile
-        protocol.h
         rapport.tex
         README.md
         tp2.tex)

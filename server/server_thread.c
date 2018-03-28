@@ -17,8 +17,6 @@
 
 #include <time.h>
 
-/* Add the protocol.h */
-#include "../protocol.h"
 
 enum {
     NUL = '\0'
