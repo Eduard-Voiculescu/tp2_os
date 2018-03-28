@@ -85,6 +85,16 @@ st_init() {
     // Attend la connection d'un client et initialise les structures pour
     // l'algorithme du banquier.
 
+    /* Initialiser le server */
+    struct sockaddr_in cli_addr;
+    int clilen = sizeof(cli_addr);
+    int newsockfd = accept(server_socket_fd, (struct sockaddr *) &cli_addr, &clilen);
+
+    if (newsockfd < 0) {
+        perror("Error on accept.");
+        exit(0);
+    }
+
     /* Initisalisation de structures de données pour l'algo du banquier */
 
     available = malloc(nb_resources * sizeof(int));
@@ -128,9 +138,6 @@ st_init() {
             need[i][j] = 0; // 'k' = 0
         }
     }
-
-    /* Initialiser le server */
-    struct sockaddr_in server_addr;
 
 }
 
@@ -190,7 +197,7 @@ void
 st_signal() {
     // TODO: Remplacer le contenu de cette fonction
 
-    
+
 
     // TODO end
 }
