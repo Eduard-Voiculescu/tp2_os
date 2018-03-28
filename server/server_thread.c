@@ -84,9 +84,9 @@ st_init() {
     // l'algorithme du banquier.
 
     /* Initialiser le server */
-    struct sockaddr_in cli_addr;
-    int clilen = sizeof(cli_addr);
-    int newsockfd = accept(server_socket_fd, (struct sockaddr *) &cli_addr, &clilen);
+    struct sockaddr_in thread_addr;
+    socklen_t thread_len = sizeof(thread_addr);
+    int newsockfd = accept(server_socket_fd, (struct sockaddr *) &thread_addr, &thread_len);
 
     if (newsockfd < 0) {
         perror("Error on accept.");
@@ -139,6 +139,17 @@ st_init() {
 
 }
 
+void response_to_client (int socket_fd, int reponse[4], int len) {
+    int n;
+    /* Write a response to the client */
+    n = (int) write(socket_fd, reponse, (size_t) len);
+
+    if (n < 0) {
+        perror("ERROR writing to socket");
+        exit(1);
+    }
+}
+
 void
 st_process_requests(server_thread *st, int socket_fd) {
     // TODO: Remplacer le contenu de cette fonction
@@ -157,26 +168,97 @@ st_process_requests(server_thread *st, int socket_fd) {
             break;
         }
 
-        /* Pour la commande END 2*/
+        /*
+         * Définir un char qui indique la réponse que le serveur envoye au client
+         * suite à une requête
+         */
+        int reponse[4]; // même longueur que la commande
+
+        /* Pour la commande END */
         if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') {
             /* Appeler st_signal pour fermer les threads et free toutes les ressources */
             st_signal();
             exit(0); // Exit successful
         }
 
-        /* Pour la commande ACK */
-        if(cmd[0] == 'A' && cmd[1] == 'C' && cmd[2] == 'K') {
+        /* Pour la commande REQ */
+        if (cmd[0] == 'R' && cmd[1] == 'E' && cmd[2] == 'Q') { // REQ
+            request_processed++;
+
+            /*
+             * Algo du banquier, nous devons faire declarer un int
+             * pour voir si le REQ est valide => qu'il n'y a pas
+             * d'excess de demande de ressources.
+             */
+            int valid_request = 1; // 1 by default, because we will use as a true/false
+
+            /*
+             * La requete est de la forme REQ t_id r1, r2, r3, r4, r5
+             * Iterer sur les ri
+             * De plus, nous faisons args[1 + i] puisque la position 0 est le t_id
+             */
+            for (int i = 0; i < num_resources; i++) {
+                if (args[1 + i] < 0) { // negative ressource -> desallocation
+                    valid_request = valid_request &&
+                                    (-args[1 + i] + allocation[args[1]][i] <= max[args[1]][i]);
+                } else if (args[1 + i] > 0) {
+                    valid_request = valid_request &&
+                                    (args[1 + i] + allocation[args[1]][i] <= max[args[1]][i]);
+                }
+            }
+
+            if (valid_request == 0) { // une requete invalide
+                count_invalid++;
+                break; // sortir de la boucle while
+            }
+
+            /*
+             * Puisque la requête est valide, nous devons vérifier s'il y a
+             * assez de ressources pour chaque ri, donc comparer avec le
+             * INI du t_id respectif pour que ça ne dépasse pas l'usage
+             * maximal pour chaque ri du t_id.
+             */
+            int assez_ressources = 1;
+            for (int i = 0; i < num_resources; i++) {
+                if (args[1 + i] < 0) {
+                    assez_ressources = assez_ressources
+                                       && -args[1 + i] <= available[i];
+                }
+            }
+
+            if (assez_ressources == 0) { // il n'y a pas assez de ressources
+                count_wait++;
+                reponse[0] = 'W';
+                reponse[1] = 'A';
+                reponse[2] = 'I';
+                reponse[3] = 'T';
+                /* => reponse = WAIT */
+                break; // sortir de la boucle while
+            }
+
+            /* Faire un safe state, pour l'algo du banquier ... ?? how tho ??*/
 
         }
 
-        /* Pour la commande ERR */
-        if(cmd[0] == 'E' && cmd[1] == 'R' && cmd[2] == 'R') {
+        /* Pour la commande CLO */
+        if (cmd[0] == 'C' && cmd[1] == 'L' && cmd[2] == 'O') { // CLO
+            clients_ended++;
 
-        }
+            int ended_correctly = 1;
+            for(int i = 0; i < num_resources; i++) {
+                ended_correctly = ended_correctly
+                                  && allocation[args[0]][i] == 0;
+                /* S'assurer que le t_id a 0 instances de la ressources ri */
+            }
 
-        /* Pour la commande WAIT */
-        if(cmd[0] == 'W' && cmd[1] == 'A' && cmd[2] == 'I' && cmd[3] == 'T') {
-
+            if(ended_correctly == 1) {
+                count_dispatched++;
+                /* Le serveur renvoye un ACK -> commande exécutée avec succès*/
+                reponse[0] = 'A';
+                reponse[1] = 'C';
+                reponse[2] = 'K';
+            }
+            break; // sortir de la boucle while
         }
 
         printf("Thread %d received the command: %s%s", st->id, cmd, args);
@@ -194,8 +276,16 @@ st_process_requests(server_thread *st, int socket_fd) {
 void
 st_signal() {
     // TODO: Remplacer le contenu de cette fonction
+    /* Very similar to the initialization of st_init() */
 
+    struct sockaddr_in thread_addr;
+    socklen_t thread_len = sizeof(thread_addr);
+    int newsockfd = accept(server_socket_fd, (struct sockaddr *) &thread_addr, &thread_len);
 
+    if (newsockfd < 0) {
+        perror("Error on accept.");
+        exit(0);
+    }
 
     // TODO end
 }
@@ -249,7 +339,7 @@ st_open_socket(int port_number) {
 #ifndef SOCK_NONBLOCK
     server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 #else
-    server_socket_fd = socket (AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    server_socket_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 #endif
     if (server_socket_fd < 0) {
         perror("ERROR opening socket");
@@ -257,10 +347,10 @@ st_open_socket(int port_number) {
     }
 
     struct sockaddr_in serv_addr;
-    memset (&serv_addr, 0, sizeof(serv_addr));
+    memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons (port_number);
+    serv_addr.sin_port = htons(port_number);
 
     if (bind
                 (server_socket_fd, (struct sockaddr *) &serv_addr,
