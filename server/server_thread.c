@@ -93,6 +93,9 @@ st_init() {
         exit(0);
     }
 
+    /* Pour la commande BEG */
+
+
     /* Initisalisation de structures de données pour l'algo du banquier */
 
     available = malloc(num_resources * sizeof(int));
@@ -186,11 +189,32 @@ st_process_requests(server_thread *st, int socket_fd) {
 
         /* Pour la commande INI */
         if(cmd[0] == 'I' && cmd [1] == 'N' && cmd[2] == 'I') {
+            max[st->id] = malloc(num_resources * sizeof(int));
 
+            /*
+             * Même principe que plus bas, vérifier que la requête est valide
+             * i.e., vérifier que l'usage du client tid ne dépasse pas le max
+             * que peut provisionner chaque ressource
+             */
+
+            int valid_request = 1;
+            for(int i = 0; i < num_resources; i++) {
+                valid_request = valid_request && args[1 + i] <= available[i];
+                max[st->id][i] = args[1 + i];
+            }
+
+            if(valid_request == 1) {
+                reponse[0] = 'A';
+                reponse[1] = 'C';
+                reponse[2] = 'K';
+            }
+            /* Gérer le cas ou que la requeete nest pas valide ...*/
+            break;
         }
 
         /* Pour la commande END */
         if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') {
+            /* On doit fermer les clients */
             exit(0); // Exit successful
         }
 
@@ -213,10 +237,10 @@ st_process_requests(server_thread *st, int socket_fd) {
             for (int i = 0; i < num_resources; i++) {
                 if (args[1 + i] < 0) { // negative ressource -> desallocation
                     valid_request = valid_request &&
-                                    (-args[1 + i] + allocation[args[1]][i] <= max[args[1]][i]);
+                                    (-args[1 + i] + allocation[args[1]][i] <= max[args[0]][i]);
                 } else if (args[1 + i] > 0) {
                     valid_request = valid_request &&
-                                    (args[1 + i] + allocation[args[1]][i] <= max[args[1]][i]);
+                                    (args[1 + i] + allocation[args[1]][i] <= max[args[0]][i]);
                 }
             }
 
