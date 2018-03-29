@@ -139,10 +139,10 @@ st_init() {
 
     /* Initisalisation de structures de données pour l'algo du banquier */
 
-    available = malloc(num_resources * sizeof(int));
-    max = malloc(nb_registered_clients * sizeof(int));
-    allocation = malloc(nb_registered_clients * sizeof(int));
-    need = malloc(nb_registered_clients * sizeof(int));
+    available = (int *)malloc(num_resources * sizeof(int));
+    max = (int **)malloc(nb_registered_clients * sizeof(int));
+    allocation = (int **)malloc(nb_registered_clients * sizeof(int));
+    need = (int **)malloc(nb_registered_clients * sizeof(int));
 
     /* If there are no resources and no clients */
     if (available == NULL || max == NULL || allocation == NULL || need == NULL) {
@@ -160,9 +160,9 @@ st_init() {
     }
 
     for (int j = 0; j < nb_registered_clients; j++) {
-        max[j] = malloc(num_resources * sizeof(int));
-        allocation[j] = malloc(num_resources * sizeof(int));
-        need[j] = malloc(num_resources * sizeof(int));
+        max[j] = (int *)malloc(num_resources * sizeof(int));
+        allocation[j] = (int *)malloc(num_resources * sizeof(int));
+        need[j] = (int *)malloc(num_resources * sizeof(int));
 
         /* Manage if there are no resources */
         if (max[j] == NULL || allocation[j] == NULL || need[j] == NULL) {
@@ -194,6 +194,7 @@ st_init() {
 
 }
 
+/* À utiliser lorsqu'on répond au client */
 void response_to_client (int socket_fd, int reponse[4], int len) {
     int n;
     /* Write a response to the client */
@@ -355,12 +356,13 @@ st_process_requests(server_thread *st, int socket_fd) {
  * For the Bankers Algorithm to "work" -- if we can -- we have to implement a
  * int isSafeState function to determine if the system is in a safe state
  * or not.
+ * Available + Allocation = New Available
  */
 
 int isSafeState() {
 
-}
 
+}
 
 void
 st_signal() {
