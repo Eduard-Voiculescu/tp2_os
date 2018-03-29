@@ -67,9 +67,16 @@ int *available;
 int **max;
 int **allocation;
 int **need;
-int *available_resources;   // sera utilisé pour comparer pour le safe state
+int *available_resources;  // sera utilisé pour comparer pour le safe state
                            // et c'est le tableau de quand on appelle BEG
                            // et qu'on le remplis avec PRO
+
+/* Les mutex pour l'algo du banquiers */
+pthread_mutex_t request_lock;
+pthread_mutex_t request_unlock;
+
+/* Nombre de ressources lorsqu'on lance le BEG */
+int num_resources;
 
 static void sigint_handler(int signum) {
     // Code terminaison.
@@ -88,54 +95,8 @@ st_init() {
     // Attend la connection d'un client et initialise les structures pour
     // l'algorithme du banquier.
 
-    /* Initialiser le server */
-    struct sockaddr_in thread_addr;
-    socklen_t thread_len = sizeof(thread_addr);
-    int newsockfd = accept(server_socket_fd, (struct sockaddr *) &thread_addr, &thread_len);
-
-    if (newsockfd < 0) {
-        perror("Error on accept.");
-        exit(0);
-    }
-
-    /* Exactly the same as in st_process_request*/
-    FILE *socket_r = fdopen(newsockfd, "r");
-    FILE *socket_w = fdopen(newsockfd, "w");
-    int reponse[4]; // même longueur que la commande --> ce qui est retournée au CLIENT
-
-    while(true) {
-        char cmd[4] = {NUL, NUL, NUL, NUL};
-        if (!fread(cmd, 3, 1, socket_r))
-            break;
-        char *args = NULL;
-        size_t args_len = 0;
-        ssize_t cnt = getline(&args, &args_len, socket_r);
-        if (!args || cnt < 1 || args[cnt - 1] != '\n') {
-            break;
-        }
-        /* Pour la commande BEG */
-        if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
-            num_resources = args[0];
-            available_resources = malloc(num_resources * sizeof(int));
-            reponse[0] = 'A';
-            reponse[1] = 'C';
-            reponse[2] = 'K';
-            break;
-        }
-
-        /* Pour la commande PRO */
-        if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') {
-            for(int i = 0; i < num_resources; i++) {
-                /* PRO r1 r2 r3 r4 r5 --> PRO 10(r1) 5(r2) 3(r3) 23(r4) 1(r5) */
-                /* [10, 5, 3, 23, 1] */
-                available_resources[i] = args[i];
-            }
-            reponse[0] = 'A';
-            reponse[1] = 'C';
-            reponse[2] = 'K';
-            break;
-        }
-    }
+    /* Appeler st_process_request() --> pour les PRO et BEG */
+    //st_process_requests();
 
     /* Initisalisation de structures de données pour l'algo du banquier */
 
@@ -149,23 +110,30 @@ st_init() {
         perror("No ressources and no clients -- null pointer exception");
     }
 
-    /*
-     * Nous n'avons pas fait de double boucle for, car la complexité aurait été
-     * de n^2 comparativement à une complexité de 2n
-     */
-
     for (int i = 0; i < num_resources; i++) {
         // tous les i on nb_resources --> par défaut on met à 0
-        available[i] = 0;
+        available[i] = available_resources[i];
     }
 
-    for (int j = 0; j < nb_registered_clients; j++) {
-        max[j] = (int *)malloc(num_resources * sizeof(int));
-        allocation[j] = (int *)malloc(num_resources * sizeof(int));
-        need[j] = (int *)malloc(num_resources * sizeof(int));
+    /*
+     * Les mutex de l'agorithm du banquier. Source pour nous aider à comprendre:
+     * http://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_init.html
+     */
+    if (pthread_mutex_init(&request_lock, NULL) != 0) {
+        perror("Mutex --request_lock-- ne fonctionne pas.\n");
+    }
+
+    if (pthread_mutex_init(&request_unlock, NULL) != 0) {
+        perror("Mutex -- -- ne fonctionne pas.\n");
+    }
+
+    for (int i = 0; i < nb_registered_clients; i++) {
+        max[i] = (int *)malloc(num_resources * sizeof(int));
+        allocation[i] = (int *)malloc(num_resources * sizeof(int));
+        need[i] = (int *)malloc(num_resources * sizeof(int));
 
         /* Manage if there are no resources */
-        if (max[j] == NULL || allocation[j] == NULL || need[j] == NULL) {
+        if (max[i] == NULL || allocation[i] == NULL || need[i] == NULL) {
             perror("No resources -- null pointer exception");
         }
 
@@ -185,12 +153,14 @@ st_init() {
          * Available + Allocation = New Available
          */
 
-        for (int i = 0; i < num_resources; i++) {
+        for (int j = 0; j < num_resources; j++) {
             max[i][j] = 0; // 'k' = 0
             allocation[i][j] = 0; // 'k' = 0
             need[i][j] = 0; // 'k' = 0
         }
     }
+    /* -- ? Envoyer au client ? --*/
+    //response_to_client();
 
 }
 
@@ -205,6 +175,10 @@ void response_to_client (int socket_fd, int reponse[4], int len) {
         exit(1);
     }
 }
+
+void st_process_requests_BEG() {
+
+};
 
 void
 st_process_requests(server_thread *st, int socket_fd) {
@@ -228,7 +202,33 @@ st_process_requests(server_thread *st, int socket_fd) {
          * Définir un char qui indique la réponse que le serveur envoye au client
          * suite à une requête
          */
-        int reponse[4]; // même longueur que la commande
+        char reponse[4] = {NUL, NUL, NUL, NUL}; // même longueur que la commande
+
+        /* Pour la commande BEG */
+        /* BEG est de la forme BEG _nbRessources_ _nbClients_*/
+        if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
+            num_resources = args[0] - '0';
+            nb_registered_clients = args[1] - '0';
+            reponse[0] = 'A';
+            reponse[1] = 'C';
+            reponse[2] = 'K';
+            break;
+        }
+
+        /* Pour la commande PRO */
+        /* PRO est de la forme PRO nb(r1) nb(r2) nb(r3) nb(r4) nb(r5) */
+        if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') {
+
+            for(int i = 0; i < num_resources; i++){
+                available[i] = atoi(args[i]);
+            }
+
+            reponse[0] = 'A';
+            reponse[1] = 'C';
+            reponse[2] = 'K';
+            break;
+        }
+
 
         /* Pour la commande INI */
         if(cmd[0] == 'I' && cmd [1] == 'N' && cmd[2] == 'I') {
@@ -289,6 +289,7 @@ st_process_requests(server_thread *st, int socket_fd) {
 
             if (valid_request == 0) { // une requete invalide
                 count_invalid++;
+                /* Renvoyer un ERR expliquant pk cest invalide ... */
                 break; // sortir de la boucle while
             }
 

@@ -11,9 +11,6 @@
 
 extern bool accepting_connections;
 
-/* Nombre de resources différentes.  */
-extern int num_resources;
-
 typedef struct server_thread server_thread;
 struct server_thread
 {
