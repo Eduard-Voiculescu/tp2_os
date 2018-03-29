@@ -60,12 +60,16 @@ unsigned int clients_ended = 0;
  *
  * Notez que available est un "tableau de 1d" --> m resouces
  * et que max, allocation et need sont des "tableaux de 2d" --> n process and m resources
- *
+ * Nous devons également déclarer un tableau pout le provisionnement des ressourves
  * */
+
 int *available;
 int **max;
 int **allocation;
 int **need;
+int available_resources[]; // sera utilisé pour comparer pour le safe state
+                           // et c'est le tableau de quand on appelle BEG
+                           // et qu'on le remplis avec PRO
 
 static void sigint_handler(int signum) {
     // Code terminaison.
@@ -97,7 +101,41 @@ st_init() {
     /* Exactly the same as in st_process_request*/
     FILE *socket_r = fdopen(newsockfd, "r");
     FILE *socket_w = fdopen(newsockfd, "w");
-    int reponse[4]; // même longueur que la commande
+    int reponse[4]; // même longueur que la commande --> ce qui est retournée au CLIENT
+
+    while(true) {
+        char cmd[4] = {NUL, NUL, NUL, NUL};
+        if (!fread(cmd, 3, 1, socket_r))
+            break;
+        char *args = NULL;
+        size_t args_len = 0;
+        ssize_t cnt = getline(&args, &args_len, socket_r);
+        if (!args || cnt < 1 || args[cnt - 1] != '\n') {
+            break;
+        }
+        /* Pour la commande BEG */
+        if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
+            num_resources = args[0];
+            available_resources = malloc(num_resources * sizeof(int));
+            reponse[0] = 'A';
+            reponse[1] = 'C';
+            reponse[2] = 'K';
+            break;
+        }
+
+        /* Pour la commande PRO */
+        if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') {
+            for(int i = 0; i < num_resources; i++) {
+                /* PRO r1 r2 r3 r4 r5 --> PRO 10(r1) 5(r2) 3(r3) 23(r4) 1(r5) */
+                /* [10, 5, 3, 23, 1] */
+                available_resources[i] = args[i];
+            }
+            reponse[0] = 'A';
+            reponse[1] = 'C';
+            reponse[2] = 'K';
+            break;
+        }
+    }
 
     /* Initisalisation de structures de données pour l'algo du banquier */
 
@@ -117,7 +155,8 @@ st_init() {
      */
 
     for (int i = 0; i < num_resources; i++) {
-        available[i] = num_resources; // tous les i on nb_resources
+        // tous les i on nb_resources --> par défaut on met à 0
+        available[i] = 0;
     }
 
     for (int j = 0; j < nb_registered_clients; j++) {
@@ -150,37 +189,6 @@ st_init() {
             max[i][j] = 0; // 'k' = 0
             allocation[i][j] = 0; // 'k' = 0
             need[i][j] = 0; // 'k' = 0
-        }
-    }
-
-    while(true) {char cmd[4] = {NUL, NUL, NUL, NUL};
-        if (!fread(cmd, 3, 1, socket_r))
-            break;
-        char *args = NULL;
-        size_t args_len = 0;
-        ssize_t cnt = getline(&args, &args_len, socket_r);
-        if (!args || cnt < 1 || args[cnt - 1] != '\n') {
-            break;
-        }
-        /* Pour la commande BEG */
-        if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
-            num_resources = args[0];
-            reponse[0] = 'A';
-            reponse[1] = 'C';
-            reponse[2] = 'K';
-            break;
-        }
-
-        /* Pour la commande PRO */
-        if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') {
-            for(int i = 0; i < num_resources; i++) {
-                /* ... VRAIMENT PAS SUR DE CA ... */
-                *max[i] = args[i];
-            }
-            reponse[0] = 'A';
-            reponse[1] = 'C';
-            reponse[2] = 'K';
-            break;
         }
     }
 
@@ -341,6 +349,16 @@ st_process_requests(server_thread *st, int socket_fd) {
     fclose(socket_r);
     fclose(socket_w);
     // TODO end
+}
+
+/*
+ * For the Bankers Algorithm to "work" -- if we can -- we have to implement a
+ * int isSafeState function to determine if the system is in a safe state
+ * or not.
+ */
+
+int isSafeState() {
+
 }
 
 
