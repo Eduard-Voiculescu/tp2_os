@@ -74,6 +74,7 @@ static void sigint_handler(int signum) {
 
 void
 st_init() {
+
     // Handle interrupt
     signal(SIGINT, &sigint_handler);
 
@@ -93,8 +94,10 @@ st_init() {
         exit(0);
     }
 
-    /* Pour la commande BEG */
-
+    /* Exactly the same as in st_process_request*/
+    FILE *socket_r = fdopen(newsockfd, "r");
+    FILE *socket_w = fdopen(newsockfd, "w");
+    int reponse[4]; // même longueur que la commande
 
     /* Initisalisation de structures de données pour l'algo du banquier */
 
@@ -147,6 +150,37 @@ st_init() {
             max[i][j] = 0; // 'k' = 0
             allocation[i][j] = 0; // 'k' = 0
             need[i][j] = 0; // 'k' = 0
+        }
+    }
+
+    while(true) {char cmd[4] = {NUL, NUL, NUL, NUL};
+        if (!fread(cmd, 3, 1, socket_r))
+            break;
+        char *args = NULL;
+        size_t args_len = 0;
+        ssize_t cnt = getline(&args, &args_len, socket_r);
+        if (!args || cnt < 1 || args[cnt - 1] != '\n') {
+            break;
+        }
+        /* Pour la commande BEG */
+        if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
+            num_resources = args[0];
+            reponse[0] = 'A';
+            reponse[1] = 'C';
+            reponse[2] = 'K';
+            break;
+        }
+
+        /* Pour la commande PRO */
+        if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') {
+            for(int i = 0; i < num_resources; i++) {
+                /* ... VRAIMENT PAS SUR DE CA ... */
+                *max[i] = args[i];
+            }
+            reponse[0] = 'A';
+            reponse[1] = 'C';
+            reponse[2] = 'K';
+            break;
         }
     }
 
@@ -208,7 +242,7 @@ st_process_requests(server_thread *st, int socket_fd) {
                 reponse[1] = 'C';
                 reponse[2] = 'K';
             }
-            /* Gérer le cas ou que la requeete nest pas valide ...*/
+            /* Gérer le cas ou que la requête n'est pas valide ...*/
             break;
         }
 
