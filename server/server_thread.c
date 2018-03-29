@@ -67,7 +67,7 @@ int *available;
 int **max;
 int **allocation;
 int **need;
-int available_resources[]; // sera utilisé pour comparer pour le safe state
+int *available_resources;   // sera utilisé pour comparer pour le safe state
                            // et c'est le tableau de quand on appelle BEG
                            // et qu'on le remplis avec PRO
 
