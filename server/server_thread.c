@@ -64,10 +64,6 @@ int **max;
 int **allocation;
 int **need;
 
-/* Les mutex pour l'algo du banquiers */
-pthread_mutex_t request_lock;
-pthread_mutex_t request_unlock;
-
 /* Nombre de ressources lorsqu'on lance le BEG */
 int num_resources;
 
@@ -116,18 +112,6 @@ st_init() {
         // tous les i on nb_resources --> par défaut on met à 0
         // maybe change this ?
         available[i] = 0;
-    }
-
-    /*
-     * Les mutex de l'agorithm du banquier. Source pour nous aider à comprendre:
-     * http://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_init.html
-     */
-    if (pthread_mutex_init(&request_lock, NULL) != 0) {
-        perror("Mutex --request_lock-- ne fonctionne pas.\n");
-    }
-
-    if (pthread_mutex_init(&request_unlock, NULL) != 0) {
-        perror("Mutex --request_unlock-- ne fonctionne pas.\n");
     }
 
     for (int i = 0; i < nb_registered_clients; i++) {
@@ -550,7 +534,6 @@ st_process_requests(server_thread *st, int socket_fd) {
 void
 st_signal() {
     // TODO: Remplacer le contenu de cette fonction
-    /* Very similar to the initialization of st_init() */
 
     struct sockaddr_in thread_addr;
     socklen_t thread_len = sizeof(thread_addr);
