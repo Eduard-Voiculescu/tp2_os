@@ -16,6 +16,8 @@
 #include <signal.h>
 
 #include <time.h>
+#include <stddef.h>
+#include <stdio.h>
 
 
 enum {
@@ -124,7 +126,7 @@ st_init() {
     }
 
     if (pthread_mutex_init(&request_unlock, NULL) != 0) {
-        perror("Mutex -- -- ne fonctionne pas.\n");
+        perror("Mutex --request_unlock-- ne fonctionne pas.\n");
     }
 
     for (int i = 0; i < nb_registered_clients; i++) {
@@ -178,7 +180,29 @@ void response_to_client (int socket_fd, int reponse[4], int len) {
 
 void st_process_requests_BEG() {
 
-};
+}
+
+void st_process_requests_PRO(){
+
+}
+
+/* SOURCE : https://stackoverflow.com/questions/8512958/is-there-a-windows-variant-of-strsep */
+char* mystrsep(char** stringp, const char* delim)
+{
+    char* start = *stringp;
+    char* p;
+    p = (start != NULL) ? strpbrk(start, delim) : NULL;
+    if (p == NULL)
+    {
+        *stringp = NULL;
+    }
+    else
+    {
+        *p = '\0';
+        *stringp = p + 1;
+    }
+    return start;
+}
 
 void
 st_process_requests(server_thread *st, int socket_fd) {
@@ -207,8 +231,18 @@ st_process_requests(server_thread *st, int socket_fd) {
         /* Pour la commande BEG */
         /* BEG est de la forme BEG _nbRessources_ _nbClients_*/
         if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
-            num_resources = args[0] - '0';
-            nb_registered_clients = args[1] - '0';
+
+            /* Nous devons séparer le args en tokens --> i.e.: 12 10 */
+            strstr(args, " ");
+            char *token = strtok(args, " ");
+            char *args_1 = malloc((strlen(token)+1) * sizeof(char));
+            char *args_2 = malloc((strlen(token)+1) * sizeof(char));
+            strcpy(args_1, token);
+            token = strtok(NULL, " ");
+            strcpy(args_2, token);
+
+            num_resources = atoi(args_1);
+            nb_registered_clients = atoi(args_2);
             reponse[0] = 'A';
             reponse[1] = 'C';
             reponse[2] = 'K';
@@ -219,8 +253,17 @@ st_process_requests(server_thread *st, int socket_fd) {
         /* PRO est de la forme PRO nb(r1) nb(r2) nb(r3) nb(r4) nb(r5) */
         if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') {
 
+            /*
+             * Il faut prendre la commande de PRO et ses arguments et les
+             * passer à chaque colonnes de available
+             */
+            char *running;
+            char *token;
+            running = strdup(args);
+
             for(int i = 0; i < num_resources; i++){
-                available[i] = atoi(args[i]);
+                token = mystrsep(&running, " ");
+                available[i] = atoi(token);
             }
 
             reponse[0] = 'A';
