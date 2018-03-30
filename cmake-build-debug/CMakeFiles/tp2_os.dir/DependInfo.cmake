@@ -4,12 +4,12 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/client_thread.c" "/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/client/client_thread.c.o"
-  "/Users/eduardvoiculescu/Documents/GitHub/tp2_os/client/main.c" "/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/client/main.c.o"
-  "/Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/main.c" "/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/server/main.c.o"
-  "/Users/eduardvoiculescu/Documents/GitHub/tp2_os/server/server_thread.c" "/Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/server/server_thread.c.o"
+  "/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/client_thread.c" "/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/client/client_thread.c.o"
+  "/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/client/main.c" "/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/client/main.c.o"
+  "/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/main.c" "/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/server/main.c.o"
+  "/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/server/server_thread.c" "/cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/tp2_os.dir/server/server_thread.c.o"
   )
-set(CMAKE_C_COMPILER_ID "AppleClang")
+set(CMAKE_C_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH

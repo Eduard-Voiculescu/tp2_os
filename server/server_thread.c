@@ -12,12 +12,9 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
 #include <signal.h>
-
 #include <time.h>
 #include <stddef.h>
-#include <stdio.h>
 
 
 enum {
@@ -31,9 +28,6 @@ enum {
 };
 
 unsigned int server_socket_fd;
-
-// Nombre de client enregistré.
-int nb_registered_clients;
 
 // Variable du journal.
 // Nombre de requêtes acceptées immédiatement (ACK envoyé en réponse à REQ).
@@ -69,9 +63,6 @@ int *available;
 int **max;
 int **allocation;
 int **need;
-int *available_resources;  // sera utilisé pour comparer pour le safe state
-                           // et c'est le tableau de quand on appelle BEG
-                           // et qu'on le remplis avec PRO
 
 /* Les mutex pour l'algo du banquiers */
 pthread_mutex_t request_lock;
@@ -79,6 +70,15 @@ pthread_mutex_t request_unlock;
 
 /* Nombre de ressources lorsqu'on lance le BEG */
 int num_resources;
+
+/* Nombre de client enregistré. */
+int nb_registered_clients;
+
+/*
+ * Définir un char qui indique la réponse que le serveur envoye au client
+ * suite à une requête
+ */
+char reponse[4] = {NUL, NUL, NUL, NUL}; // même longueur que la commande
 
 static void sigint_handler(int signum) {
     // Code terminaison.
@@ -114,7 +114,8 @@ st_init() {
 
     for (int i = 0; i < num_resources; i++) {
         // tous les i on nb_resources --> par défaut on met à 0
-        available[i] = available_resources[i];
+        // maybe change this ?
+        available[i] = 0;
     }
 
     /*
@@ -166,27 +167,109 @@ st_init() {
 
 }
 
-/* À utiliser lorsqu'on répond au client */
-void response_to_client (int socket_fd, int reponse[4], int len) {
-    int n;
-    /* Write a response to the client */
-    n = (int) write(socket_fd, reponse, (size_t) len);
+/* Nous allons maintenant implémenter le Bankers Algorithm. */
 
-    if (n < 0) {
-        perror("ERROR writing to socket");
-        exit(1);
+/*
+ * Fonction pour comparer 2 array de int
+ * Notez que cette fonction est pour comparer les instances des ressources
+ * donc dans notre cas, array_a[i] doit toujours être <= array_b[i].
+ */
+int compare_array(int *array_a, int *array_b) {
+
+    int v1 = sizeof(array_a)/ sizeof(int);
+    int v2 = sizeof(array_b)/ sizeof(int);
+
+    /* Premièrement, comparer leurs tailles */
+    if(v1 != v2) {
+        return -1;
+    }
+    for(int i = 0; i < num_resources; i++){
+        if(array_a[i] > array_b[i]) {
+            return 0; // false pas correct
+        }
+    }
+    /*
+     * Tout est beau, les valeurs des instances de ressources sont <= au "max"
+     * on peut retoutner 1
+     */
+    return 1;
+}
+
+// This function tells us if the system is safe or unsafe.
+// 1 -> safe, 0 -> unsafe
+// Inspiration de https://www.studytonight.com/operating-system/bankers-algorithm
+
+int safe_state_banker () {
+
+    int finish[nb_registered_clients];
+    int work[num_resources];
+
+    for(int i = 0; i < num_resources; i++) {
+        work[i] = available[i];
+    }
+
+    for(int i = 0; i < nb_registered_clients; i++) {
+        finish[i] = 0;
+    }
+
+    for (int i = 0; i < nb_registered_clients; i++){
+        if(finish[i] == 0 && compare_array(need[i], work)) {
+            work[i] = work[i] + *allocation[i] ;
+            finish[i] = 1; // finish[i] = true
+        }
+    }
+    for (int i = 0; i < nb_registered_clients; i++) {
+        if (finish[i] == 0) {
+            return 0; // not safe state
+        }
+    }
+    /* SAFE STATE xD */
+    return 1;
+}
+
+/* Resource Request Algorithm
+ * request --> la requête avec les ressources
+ * req --> la requête
+ * 1 -> requête acceptée, 0 -> requête refusée
+ * request -> 1 0 10 4 3
+ * req 1 (r1) ou 2 (r2) ...
+ */
+int resource_request_algorithm (int *request, int req) {
+
+    for (int i = 0; i < num_resources; i++) {
+
+        /* 1. */
+        if(compare_array(request, need[req]) != 1) {
+            perror("We gonna have to make you wait my dude! -feelsbad-");
+        }
+
+        /* 2. */
+        while (compare_array(request, need[req]) != 1) {
+            /* Attend -_- */
+        }
+
+        /* 3. -> we assume that the ressources have been allocated. */
+        for(int i = 0; i < num_resources; i++) {
+            available[i] = available[i] - request[i];
+            allocation[i] = allocation[i] + request[i];
+            need[i] = need[i] - request[i];
+        }
+        if(!safe_state_banker()) {
+            for(int i = 0; i < num_resources; i++) {
+                available[i] = available[i] + request[i];
+                allocation[i] = allocation[i] - request[i];
+                need[i] = need[i] + request[i];
+            }
+            return 0;
+        }
+        return 1;
     }
 }
 
-void st_process_requests_BEG() {
-
-}
-
-void st_process_requests_PRO(){
-
-}
-
-/* SOURCE : https://stackoverflow.com/questions/8512958/is-there-a-windows-variant-of-strsep */
+/*
+ * SOURCE : https://stackoverflow.com/questions/8512958/is-there-a-windows-variant-of-strsep
+ * Nous n'avons pas codé le mystrsep.
+ */
 char* mystrsep(char** stringp, const char* delim)
 {
     char* start = *stringp;
@@ -202,6 +285,200 @@ char* mystrsep(char** stringp, const char* delim)
         *stringp = p + 1;
     }
     return start;
+}
+
+/* À utiliser lorsqu'on répond au client */
+void response_to_client (int socket_fd, int reponse[4], int len) {
+    int n;
+    /* Write a response to the client */
+    n = (int) write(socket_fd, reponse, (size_t) len);
+
+    if (n < 0) {
+        perror("ERROR writing to socket");
+        exit(1);
+    }
+}
+
+/* Ici nous implémentons les différents protocoles de communication */
+
+void st_process_requests_BEG(char *cmd, char *args) {
+
+    /* Nous devons séparer le args en tokens --> i.e.: 12 10 */
+    strstr(args, " ");
+    char *token = strtok(args, " ");
+    char *args_1 = malloc((strlen(token)+1) * sizeof(char));
+    char *args_2 = malloc((strlen(token)+1) * sizeof(char));
+    strcpy(args_1, token);
+    token = strtok(NULL, " ");
+    strcpy(args_2, token);
+
+    num_resources = atoi(args_1);
+    nb_registered_clients = atoi(args_2);
+    reponse[0] = 'A';
+    reponse[1] = 'C';
+    reponse[2] = 'K';
+    /* Free at last */
+    free(args_1);
+    free(args_2);
+}
+
+void st_process_requests_PRO(char *cmd, char *args){
+
+    /*
+     * Il faut prendre la commande de PRO et ses arguments et les
+     * passer à chaque colonnes de available
+     */
+    char *running;
+    char *token;
+    running = strdup(args);
+
+    for(int i = 0; i < num_resources; i++){
+        token = mystrsep(&running, " ");
+        available[i] = atoi(token);
+    }
+    reponse[0] = 'A';
+    reponse[1] = 'C';
+    reponse[2] = 'K';
+}
+
+/*
+ * On a besoin du server_thread puisque chaque thread a un ini a lui-seul.
+ * INI args1, args2, args3, ..., argsn -> les args sont l'usage maximal que
+ * le process i peut utiliser.
+ */
+void st_process_requests_INI (char *cmd, char *args, server_thread *st) {
+
+    max[st->id] = malloc(num_resources * sizeof(int));
+
+    /*
+     * Même principe que plus bas, vérifier que la requête est valide
+     * i.e., vérifier que l'usage du client tid ne dépasse pas le max
+     * que peut provisionner chaque ressource
+     */
+
+    int valid_request = 1;
+    for(int i = 0; i < num_resources; i++) {
+        valid_request = valid_request && args[i] <= available[i];
+        max[st->id][i] = args[i];
+    }
+
+    if(valid_request == 1) {
+        reponse[0] = 'A';
+        reponse[1] = 'C';
+        reponse[2] = 'K';
+    }
+    /* Gérer le cas ou que la requête n'est pas valide ...*/
+}
+
+void st_process_requests_END() {
+
+    /* On doit fermer les clients et nous devons free toutes les structures. */
+    free(available);
+    free(max);
+    free(allocation);
+    free(need);
+    exit(0); // Exit successful
+}
+
+void st_process_requests_REQ(char *cmd, char *args, server_thread *st) {
+
+    request_processed++;
+
+    /*
+     * Algo du banquier, nous devons faire declarer un int
+     * pour voir si le REQ est valide => qu'il n'y a pas
+     * d'excess de demande de ressources.
+     */
+    int valid_request = 1; // 1 by default, because we will use as a true/false
+
+    /*
+     * La requete est de la forme REQ t_id r1, r2, r3, r4, r5
+     * Iterer sur les ri
+     * De plus, nous faisons args[1 + i] puisque la position 0 est le t_id
+     */
+    for (int i = 0; i < num_resources; i++) {
+        if (args[1 + i] < 0) { // negative ressource -> desallocation
+            valid_request = valid_request &&
+                            (-args[i] + allocation[args[st->id]][i] <= max[args[st->id]][i]);
+        } else if (args[1 + i] > 0) {
+            valid_request = valid_request &&
+                            (args[i] + allocation[args[st->id]][i] <= max[args[st->id]][i]);
+        }
+    }
+
+    if (valid_request == 0) { // une requete invalide
+        count_invalid++;
+        reponse[0] = 'E';
+        reponse[1] = 'R';
+        reponse[2] = 'R';
+        perror("-- Requête invalide --");
+        /* Renvoyer un ERR */
+        return;
+    }
+
+    /*
+     * Puisque la requête est valide, nous devons vérifier s'il y a
+     * assez de ressources pour chaque ri, donc comparer avec le
+     * INI du t_id respectif pour que ça ne dépasse pas l'usage
+     * maximal pour chaque ri du t_id.
+     */
+    int assez_ressources = 1;
+    for (int i = 0; i < num_resources; i++) {
+        if (args[1 + i] < 0) {
+            assez_ressources = assez_ressources
+                               && -args[i] <= available[i];
+        }
+    }
+
+    if (assez_ressources == 0) { // il n'y a pas assez de ressources
+        count_wait++;
+        reponse[0] = 'W';
+        reponse[1] = 'A';
+        reponse[2] = 'I';
+        reponse[3] = 'T';
+        /* => reponse = WAIT */
+        return;
+    }
+
+    int safe_state;
+    for(int i = 0; i <num_resources; i++) {
+        /* TODO: Arranger ceci ou si possible tester -> car ne fait pas vraiment de sens */
+        safe_state = resource_request_algorithm (need[i], available[i]);
+        if (safe_state == 0) {
+            /* Unsafe state -- on doit attendre */
+            count_wait++;
+            reponse[0] = 'W';
+            reponse[1] = 'A';
+            reponse[2] = 'I';
+            reponse[3] = 'T';
+            return; // on doit sortir.
+        }
+    }
+    /* ! We are safe ! */
+    reponse[0] = 'A';
+    reponse[1] = 'C';
+    reponse[2] = 'K';
+}
+
+void st_process_requests_CLO (char *cmd, char *args, server_thread *st) {
+
+    clients_ended++;
+
+    int ended_correctly = 1;
+    for(int i = 0; i < num_resources; i++) {
+        ended_correctly = ended_correctly
+                          && allocation[args[st->id]][i] == 0;
+        /* S'assurer que le t_id a 0 instances de la ressources ri */
+    }
+
+    if(ended_correctly == 1) {
+        count_dispatched++;
+        /* Le serveur renvoye un ACK -> commande exécutée avec succès*/
+        reponse[0] = 'A';
+        reponse[1] = 'C';
+        reponse[2] = 'K';
+    }
+
 }
 
 void
@@ -222,167 +499,41 @@ st_process_requests(server_thread *st, int socket_fd) {
             break;
         }
 
-        /*
-         * Définir un char qui indique la réponse que le serveur envoye au client
-         * suite à une requête
-         */
-        char reponse[4] = {NUL, NUL, NUL, NUL}; // même longueur que la commande
-
         /* Pour la commande BEG */
         /* BEG est de la forme BEG _nbRessources_ _nbClients_*/
         if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
-
-            /* Nous devons séparer le args en tokens --> i.e.: 12 10 */
-            strstr(args, " ");
-            char *token = strtok(args, " ");
-            char *args_1 = malloc((strlen(token)+1) * sizeof(char));
-            char *args_2 = malloc((strlen(token)+1) * sizeof(char));
-            strcpy(args_1, token);
-            token = strtok(NULL, " ");
-            strcpy(args_2, token);
-
-            num_resources = atoi(args_1);
-            nb_registered_clients = atoi(args_2);
-            reponse[0] = 'A';
-            reponse[1] = 'C';
-            reponse[2] = 'K';
+            st_process_requests_BEG(cmd, args);
             break;
         }
 
         /* Pour la commande PRO */
         /* PRO est de la forme PRO nb(r1) nb(r2) nb(r3) nb(r4) nb(r5) */
         if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') {
-
-            /*
-             * Il faut prendre la commande de PRO et ses arguments et les
-             * passer à chaque colonnes de available
-             */
-            char *running;
-            char *token;
-            running = strdup(args);
-
-            for(int i = 0; i < num_resources; i++){
-                token = mystrsep(&running, " ");
-                available[i] = atoi(token);
-            }
-
-            reponse[0] = 'A';
-            reponse[1] = 'C';
-            reponse[2] = 'K';
+            st_process_requests_PRO(cmd, args);
             break;
         }
 
-
         /* Pour la commande INI */
         if(cmd[0] == 'I' && cmd [1] == 'N' && cmd[2] == 'I') {
-            max[st->id] = malloc(num_resources * sizeof(int));
-
-            /*
-             * Même principe que plus bas, vérifier que la requête est valide
-             * i.e., vérifier que l'usage du client tid ne dépasse pas le max
-             * que peut provisionner chaque ressource
-             */
-
-            int valid_request = 1;
-            for(int i = 0; i < num_resources; i++) {
-                valid_request = valid_request && args[1 + i] <= available[i];
-                max[st->id][i] = args[1 + i];
-            }
-
-            if(valid_request == 1) {
-                reponse[0] = 'A';
-                reponse[1] = 'C';
-                reponse[2] = 'K';
-            }
-            /* Gérer le cas ou que la requête n'est pas valide ...*/
+            st_process_requests_INI(cmd, args, st);
             break;
         }
 
         /* Pour la commande END */
         if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') {
-            /* On doit fermer les clients */
-            exit(0); // Exit successful
+            st_process_requests_END();
         }
 
         /* Pour la commande REQ */
         if (cmd[0] == 'R' && cmd[1] == 'E' && cmd[2] == 'Q') { // REQ
-            request_processed++;
-
-            /*
-             * Algo du banquier, nous devons faire declarer un int
-             * pour voir si le REQ est valide => qu'il n'y a pas
-             * d'excess de demande de ressources.
-             */
-            int valid_request = 1; // 1 by default, because we will use as a true/false
-
-            /*
-             * La requete est de la forme REQ t_id r1, r2, r3, r4, r5
-             * Iterer sur les ri
-             * De plus, nous faisons args[1 + i] puisque la position 0 est le t_id
-             */
-            for (int i = 0; i < num_resources; i++) {
-                if (args[1 + i] < 0) { // negative ressource -> desallocation
-                    valid_request = valid_request &&
-                                    (-args[1 + i] + allocation[args[1]][i] <= max[args[0]][i]);
-                } else if (args[1 + i] > 0) {
-                    valid_request = valid_request &&
-                                    (args[1 + i] + allocation[args[1]][i] <= max[args[0]][i]);
-                }
-            }
-
-            if (valid_request == 0) { // une requete invalide
-                count_invalid++;
-                /* Renvoyer un ERR expliquant pk cest invalide ... */
-                break; // sortir de la boucle while
-            }
-
-            /*
-             * Puisque la requête est valide, nous devons vérifier s'il y a
-             * assez de ressources pour chaque ri, donc comparer avec le
-             * INI du t_id respectif pour que ça ne dépasse pas l'usage
-             * maximal pour chaque ri du t_id.
-             */
-            int assez_ressources = 1;
-            for (int i = 0; i < num_resources; i++) {
-                if (args[1 + i] < 0) {
-                    assez_ressources = assez_ressources
-                                       && -args[1 + i] <= available[i];
-                }
-            }
-
-            if (assez_ressources == 0) { // il n'y a pas assez de ressources
-                count_wait++;
-                reponse[0] = 'W';
-                reponse[1] = 'A';
-                reponse[2] = 'I';
-                reponse[3] = 'T';
-                /* => reponse = WAIT */
-                break; // sortir de la boucle while
-            }
-
-            /* Faire un safe state, pour l'algo du banquier ... ?? how tho ??*/
-
+            st_process_requests_REQ(cmd, args, st);
+            break;
         }
 
         /* Pour la commande CLO */
         if (cmd[0] == 'C' && cmd[1] == 'L' && cmd[2] == 'O') { // CLO
-            clients_ended++;
-
-            int ended_correctly = 1;
-            for(int i = 0; i < num_resources; i++) {
-                ended_correctly = ended_correctly
-                                  && allocation[args[0]][i] == 0;
-                /* S'assurer que le t_id a 0 instances de la ressources ri */
-            }
-
-            if(ended_correctly == 1) {
-                count_dispatched++;
-                /* Le serveur renvoye un ACK -> commande exécutée avec succès*/
-                reponse[0] = 'A';
-                reponse[1] = 'C';
-                reponse[2] = 'K';
-            }
-            break; // sortir de la boucle while
+            st_process_requests_CLO(cmd, args, st);
+            break;
         }
 
         printf("Thread %d received the command: %s%s", st->id, cmd, args);
@@ -394,18 +545,6 @@ st_process_requests(server_thread *st, int socket_fd) {
     fclose(socket_r);
     fclose(socket_w);
     // TODO end
-}
-
-/*
- * For the Bankers Algorithm to "work" -- if we can -- we have to implement a
- * int isSafeState function to determine if the system is in a safe state
- * or not.
- * Available + Allocation = New Available
- */
-
-int isSafeState() {
-
-
 }
 
 void
