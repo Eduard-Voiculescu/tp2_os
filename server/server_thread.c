@@ -415,8 +415,6 @@ st_process_requests(server_thread *st, int socket_fd) {
             free(allocation);
             free(need);
             exit(0); // Exit successful
-
-            break;
         }
 
         /* Pour la commande REQ */
@@ -530,10 +528,14 @@ st_process_requests(server_thread *st, int socket_fd) {
         }
 
         printf("Thread %d received the command: %s%s", st->id, cmd, args);
+        printf("Vous avez fait une requête que nous ne traitons pas. Sorry not sorry.");
 
         fprintf(socket_w, "ERR Unknown command\n");
         free(args);
     }
+
+    /* Envoyer le message au client!*/
+    //send(client_socket, server_message, sizeof(server_message), 0);
 
     fclose(socket_r);
     fclose(socket_w);
