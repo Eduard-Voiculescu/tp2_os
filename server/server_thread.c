@@ -49,7 +49,8 @@ unsigned int request_processed = 0;
 // Nombre de clients ayant envoyé le message CLO.
 unsigned int clients_ended = 0;
 
-// TODO: Ajouter vos structures de données partagées, ici.
+extern server_thread *st;
+
 /*
  * Initialisation of variables for the Banker's Algorithm
  * Inspiration de https: https://www.geeksforgeeks.org/program-bankers-algorithm-set-1-safety-algorithm/
@@ -69,6 +70,8 @@ int num_resources;
 
 /* Nombre de client enregistré. */
 int nb_registered_clients;
+
+pthread_mutex_t lock;
 
 /*
  * Définir un char qui indique la réponse que le serveur envoye au client
@@ -90,6 +93,11 @@ st_init() {
     // Initialise le nombre de clients connecté.
     nb_registered_clients = 0;
 
+    /* Vérification que le mutex est fonctionnel */
+    if(pthread_mutex_init(&lock, NULL) != 0) {
+        perror("Error initialisation of the mutex.");
+    }
+
     // Attend la connection d'un client et initialise les structures pour
     // l'algorithme du banquier.
 
@@ -110,7 +118,7 @@ st_init() {
 
     for (int i = 0; i < num_resources; i++) {
         // tous les i on nb_resources --> par défaut on met à 0
-        // maybe change this ?
+        // c'est le claim vector -- 0 par défaut
         available[i] = 0;
     }
 
@@ -146,12 +154,7 @@ st_init() {
             need[i][j] = 0; // 'k' = 0
         }
     }
-    /* -- ? Envoyer au client ? --*/
-    //response_to_client();
-
 }
-
-/* Nous allons maintenant implémenter le Bankers Algorithm. */
 
 /*
  * Fonction pour comparer 2 array de int
@@ -283,7 +286,7 @@ void response_to_client (int socket_fd, int reponse[4], int len) {
     }
 }
 
-/* Ici nous implémentons les différents protocoles de communication */
+/* ---------------------- Protocoles de communication ---------------------- */
 
 void st_process_requests_BEG(char *cmd, char *args) {
 
@@ -318,7 +321,7 @@ void st_process_requests_PRO(char *cmd, char *args){
 
     for(int i = 0; i < num_resources; i++){
         token = mystrsep(&running, " ");
-        available[i] = atoi(token);
+        max[st->id][i] = atoi(token);
     }
     reponse[0] = 'A';
     reponse[1] = 'C';
@@ -330,7 +333,7 @@ void st_process_requests_PRO(char *cmd, char *args){
  * INI args1, args2, args3, ..., argsn -> les args sont l'usage maximal que
  * le process i peut utiliser.
  */
-void st_process_requests_INI (char *cmd, char *args, server_thread *st) {
+bool st_process_requests_INI (char *cmd, char *args) {
 
     max[st->id] = malloc(num_resources * sizeof(int));
 
@@ -340,23 +343,26 @@ void st_process_requests_INI (char *cmd, char *args, server_thread *st) {
      * que peut provisionner chaque ressource
      */
 
-    int valid_request = 1;
-    for(int i = 0; i < num_resources; i++) {
-        valid_request = valid_request && args[i] <= available[i];
-        max[st->id][i] = args[i];
-    }
+    pthread_mutex_lock(&lock);
+    bool valid_request = true;
 
-    if(valid_request == 1) {
-        reponse[0] = 'A';
-        reponse[1] = 'C';
-        reponse[2] = 'K';
+    /* MERCI : https://www.studytonight.com/operating-system/bankers-algorithm ;) */
+    for(int i = 0; i < num_resources; i++) {
+        if (args[i] > available[i]){ // peut pas allouer
+            valid_request = false;
+        } else {
+            max[st->id][i] = args[i];
+            need[st->id][i] = max [st->id][i] - allocation[st->id][i];
+        }
     }
-    /* Gérer le cas ou que la requête n'est pas valide ...*/
+    pthread_mutex_unlock(&lock);
+    return valid_request;
 }
 
 void st_process_requests_END() {
 
-    /* On doit fermer les clients et nous devons free toutes les structures. */
+    /* On doit fermer le serveur et nous devons free toutes les structures. */
+    /* On ferme le serveur - sad life - */
     free(available);
     free(max);
     free(allocation);
@@ -364,33 +370,37 @@ void st_process_requests_END() {
     exit(0); // Exit successful
 }
 
-void st_process_requests_REQ(char *cmd, char *args, server_thread *st) {
+void st_process_requests_REQ(char *cmd, char *args) {
 
     request_processed++;
 
-    /*
-     * Algo du banquier, nous devons faire declarer un int
-     * pour voir si le REQ est valide => qu'il n'y a pas
-     * d'excess de demande de ressources.
-     */
-    int valid_request = 1; // 1 by default, because we will use as a true/false
+    bool valid_request = true;
+    bool assez_ressources = true;
+
+    /* Locky the locker */
+    pthread_mutex_lock(&lock);
 
     /*
-     * La requete est de la forme REQ t_id r1, r2, r3, r4, r5
-     * Iterer sur les ri
-     * De plus, nous faisons args[1 + i] puisque la position 0 est le t_id
+     * Algo du banquier, nous devons faire declarer un int pour voir si le REQ
+     * est valide => qu'il n'y a pas d'excess de demande de ressources.
      */
+
+    /*
+     * La requete est de la forme REQ t_id r1, r2, r3, r4, r5. Iterer sur les ri
+     */
+
     for (int i = 0; i < num_resources; i++) {
-        if (args[1 + i] < 0) { // negative ressource -> desallocation
+        if (args[i] < 0) { // negative ressource
             valid_request = valid_request &&
                             (-args[i] + allocation[args[st->id]][i] <= max[args[st->id]][i]);
-        } else if (args[1 + i] > 0) {
+        } else if (args[i] > 0) {
             valid_request = valid_request &&
                             (args[i] + allocation[args[st->id]][i] <= max[args[st->id]][i]);
         }
     }
 
-    if (valid_request == 0) { // une requete invalide
+    if (valid_request == false) { // une requete invalide
+        pthread_mutex_unlock(&lock);
         count_invalid++;
         reponse[0] = 'E';
         reponse[1] = 'R';
@@ -406,15 +416,14 @@ void st_process_requests_REQ(char *cmd, char *args, server_thread *st) {
      * INI du t_id respectif pour que ça ne dépasse pas l'usage
      * maximal pour chaque ri du t_id.
      */
-    int assez_ressources = 1;
     for (int i = 0; i < num_resources; i++) {
-        if (args[1 + i] < 0) {
-            assez_ressources = assez_ressources
-                               && -args[i] <= available[i];
+        if (args[i] < 0) {
+            assez_ressources = assez_ressources && -args[i] <= available[i];
         }
     }
 
-    if (assez_ressources == 0) { // il n'y a pas assez de ressources
+    if (assez_ressources == false) { // il n'y a pas assez de ressources
+        pthread_mutex_unlock(&lock);
         count_wait++;
         reponse[0] = 'W';
         reponse[1] = 'A';
@@ -444,18 +453,18 @@ void st_process_requests_REQ(char *cmd, char *args, server_thread *st) {
     reponse[2] = 'K';
 }
 
-void st_process_requests_CLO (char *cmd, char *args, server_thread *st) {
+void st_process_requests_CLO (char *cmd, char *args) {
 
     clients_ended++;
 
-    int ended_correctly = 1;
+    bool ended_correctly = true;
     for(int i = 0; i < num_resources; i++) {
         ended_correctly = ended_correctly
                           && allocation[args[st->id]][i] == 0;
         /* S'assurer que le t_id a 0 instances de la ressources ri */
     }
 
-    if(ended_correctly == 1) {
+    if(ended_correctly == true) {
         count_dispatched++;
         /* Le serveur renvoye un ACK -> commande exécutée avec succès*/
         reponse[0] = 'A';
@@ -464,6 +473,8 @@ void st_process_requests_CLO (char *cmd, char *args, server_thread *st) {
     }
 
 }
+
+/* ------------------ Fin des protocoles de communication ------------------ */
 
 void
 st_process_requests(server_thread *st, int socket_fd) {
@@ -478,6 +489,11 @@ st_process_requests(server_thread *st, int socket_fd) {
         char *args = NULL;
         size_t args_len = 0;
         ssize_t cnt = getline(&args, &args_len, socket_r);
+
+
+        //printf("le serveur reçoit %d %d %d %d %d sur le socket %d\n", args[0], args[1], args[2], args[3], args[4], socket_fd);
+
+
         if (!args || cnt < 1 || args[cnt - 1] != '\n') {
             printf("Thread %d received incomplete cmd=%s!\n", st->id, cmd);
             break;
@@ -486,6 +502,7 @@ st_process_requests(server_thread *st, int socket_fd) {
         /* Pour la commande BEG */
         /* BEG est de la forme BEG _nbRessources_ _nbClients_*/
         if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
+            printf("BEG:");
             st_process_requests_BEG(cmd, args);
             break;
         }
@@ -499,24 +516,36 @@ st_process_requests(server_thread *st, int socket_fd) {
 
         /* Pour la commande INI */
         if(cmd[0] == 'I' && cmd [1] == 'N' && cmd[2] == 'I') {
-            st_process_requests_INI(cmd, args, st);
+            if(st_process_requests_INI(cmd, args) == true) {
+                reponse[0] = 'A';
+                reponse[1] = 'C';
+                reponse[2] = 'K';
+                break;
+            } else {
+                reponse[0] = 'E';
+                reponse[1] = 'R';
+                reponse[2] = 'R';
+                perror("Erreur lors du INI");
+                /* Faire un free  ...  pas sur */
+            }
             break;
         }
 
         /* Pour la commande END */
         if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') {
             st_process_requests_END();
+            break;
         }
 
         /* Pour la commande REQ */
         if (cmd[0] == 'R' && cmd[1] == 'E' && cmd[2] == 'Q') { // REQ
-            st_process_requests_REQ(cmd, args, st);
+            st_process_requests_REQ(cmd, args);
             break;
         }
 
         /* Pour la commande CLO */
         if (cmd[0] == 'C' && cmd[1] == 'L' && cmd[2] == 'O') { // CLO
-            st_process_requests_CLO(cmd, args, st);
+            st_process_requests_CLO(cmd, args);
             break;
         }
 
