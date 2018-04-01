@@ -24,9 +24,9 @@ extern int *provisioned_resources;
 typedef struct client_thread client_thread;
 struct client_thread
 {
-  unsigned int id;
-  pthread_t pt_tid;
-  pthread_attr_t pt_attr;
+    unsigned int id;
+    pthread_t pt_tid;
+    pthread_attr_t pt_attr;
 };
 
 
