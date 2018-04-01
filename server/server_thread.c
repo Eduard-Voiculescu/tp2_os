@@ -433,7 +433,8 @@ void st_process_requests_REQ(char *cmd, char *args) {
         return;
     }
 
-    int safe_state;
+    /* Vérification de l'état */
+    int safe_state = true;
     for(int i = 0; i <num_resources; i++) {
         /* TODO: Arranger ceci ou si possible tester -> car ne fait pas vraiment de sens */
         safe_state = resource_request_algorithm (need[i], available[i]);
