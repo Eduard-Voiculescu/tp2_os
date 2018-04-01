@@ -19,12 +19,6 @@ struct server_thread
   pthread_attr_t pt_attr;
 };
 
-void st_process_requests_CLO (char *cmd, char *args);
-void st_process_requests_REQ(char *cmd, char *args);
-void st_process_requests_END();
-bool st_process_requests_INI (char *cmd, char *args);
-void st_process_requests_PRO(char *cmd, char *args);
-void st_process_requests_BEG(char *cmd, char *args);
 
 void st_open_socket (int port_number);
 void st_init (void);

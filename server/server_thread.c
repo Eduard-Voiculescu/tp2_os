@@ -320,7 +320,6 @@ st_process_requests(server_thread *st, int socket_fd) {
         /* BEG est de la forme BEG _nbRessources_ _nbClients_*/
         if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
             printf("BEG:");
-            //st_process_requests_BEG(cmd, args);
 
             /* Nous devons séparer le args en tokens --> i.e.: 12 10 */
             strstr(args, " ");
@@ -346,7 +345,6 @@ st_process_requests(server_thread *st, int socket_fd) {
         /* Pour la commande PRO */
         /* PRO est de la forme PRO nb(r1) nb(r2) nb(r3) nb(r4) nb(r5) */
         if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') {
-            //st_process_requests_PRO(cmd, args);
 
             /*
               * Il faut prendre la commande de PRO et ses arguments et les
@@ -409,7 +407,6 @@ st_process_requests(server_thread *st, int socket_fd) {
 
         /* Pour la commande END */
         if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') {
-            //st_process_requests_END();
 
             /* On doit fermer le serveur et nous devons free toutes les structures. */
             /* On ferme le serveur - sad life - */
@@ -424,7 +421,6 @@ st_process_requests(server_thread *st, int socket_fd) {
 
         /* Pour la commande REQ */
         if (cmd[0] == 'R' && cmd[1] == 'E' && cmd[2] == 'Q') { // REQ
-            //st_process_requests_REQ(cmd, args);
 
             request_processed++;
 
@@ -512,7 +508,6 @@ st_process_requests(server_thread *st, int socket_fd) {
 
         /* Pour la commande CLO */
         if (cmd[0] == 'C' && cmd[1] == 'L' && cmd[2] == 'O') { // CLO
-            //st_process_requests_CLO(cmd, args);
 
             clients_ended++;
 
@@ -544,12 +539,6 @@ st_process_requests(server_thread *st, int socket_fd) {
     fclose(socket_w);
     // TODO end
 }
-
-void st_process_requests_PRO(char *cmd, char *args);
-bool st_process_requests_INI(char *cmd, char *args);
-void st_process_requests_END();
-void st_process_requests_REQ(char *cmd, char *args);
-void st_process_requests_CLO(char *cmd, char *args);
 
 void
 st_signal ()
