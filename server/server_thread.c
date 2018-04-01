@@ -299,6 +299,37 @@ st_process_requests(server_thread *st, int socket_fd) {
     FILE *socket_r = fdopen(socket_fd, "r");
     FILE *socket_w = fdopen(socket_fd, "w");
 
+    /*
+     * Nous devons maintenant implémenter un read au client pour lire ce que
+     * le client nous envoye.
+     */
+    /* MODIFIER CAR CEST DU COPY PASTE */
+
+    int r_read = 0;
+    int size = sizeof(int) * (num_resources + 2);
+    for (int i = 0; i < size; i++) {
+        r_read = read(socket_fd, size + i, size - i);
+        if (r_read < 0) {
+            perror("server error on read");
+        }
+    }
+
+    /*
+    char data[size];
+    int remaining = size;
+    int rc;
+    while (remaining)
+    {
+        rc = read(socket_fd, data + size - remaining, remaining);
+
+        //	printf("read data:%p msg:%p send:%p sizeof(msg):%d remaining:%d rc:%d\n",data, &msg, data + size - remaining, size, remaining, rc);
+
+        if (rc < 0) {
+            perror("server error on read");
+        }
+        remaining -= rc;
+    }*/
+
     while (true) {
         char cmd[4] = {NUL, NUL, NUL, NUL};
         if (!fread(cmd, 3, 1, socket_r))
@@ -534,8 +565,36 @@ st_process_requests(server_thread *st, int socket_fd) {
         free(args);
     }
 
-    /* Envoyer le message au client!*/
-    //send(client_socket, server_message, sizeof(server_message), 0);
+    /*
+     * Nous devons maintenant implémenter un send au client la réponse
+     * suite à une requête quelconque.
+     */
+
+    /* MODIFIER CAR CEST DU COPY PASTE*/
+    /*char *response_data;
+    response_data = (char *) reponse;
+    size = sizeof(int32_t) * 2;
+    remaining = size;
+    rc = 0;
+    while (remaining) {
+
+        rc = write(socket_fd, response_data + size - remaining, remaining);
+        //	printf("write data:%p msg:%p send:%p sizeof(msg):%d remaining:%d rc:%d\n", data, &reponse, data + size - remaining, size, remaining, rc);
+
+        if (rc < 0) {
+            perror("server error on write");
+        }
+        remaining -= rc;
+    }*/
+
+    int w_write = 0;
+    for(int i = 0; i < size; i++) {
+        w_write = write(socket_fd, size + i, size - i);
+        if (w_write < 0) {
+            perror("server error on write");
+        }
+
+    }
 
     fclose(socket_r);
     fclose(socket_w);
