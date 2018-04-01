@@ -5,13 +5,6 @@
 
 bool accepting_connections = true;
 
-void st_process_requests_CLO (char *cmd, char *args);
-void st_process_requests_REQ(char *cmd, char *args);
-void st_process_requests_END();
-bool st_process_requests_INI (char *cmd, char *args);
-void st_process_requests_PRO(char *cmd, char *args);
-void st_process_requests_BEG(char *cmd, char *args);
-
 int
 main (int argc, char *argv[argc + 1])
 {
