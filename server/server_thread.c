@@ -335,7 +335,7 @@ st_process_requests(server_thread *st, int socket_fd) {
 
             /*
               * Il faut prendre la commande de PRO et ses arguments et les
-              * passer à chaque colonnes de available
+              * passer à chaque colonnes de max
               */
             char *running;
             char *token;
@@ -524,8 +524,10 @@ st_process_requests(server_thread *st, int socket_fd) {
         fprintf(socket_w, "ERR Unknown command\n");
         free(args);
     }
+    //send(client_socket, server_message, sizeof(server_message), 0);
 
-
+    /* Nous devons envoyer la réponse au client. */
+    send(socket_fd, reponse, sizeof(reponse),0);
     fclose(socket_r);
     fclose(socket_w);
     // TODO end

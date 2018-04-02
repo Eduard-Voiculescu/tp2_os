@@ -95,27 +95,27 @@ ct_code (void *param)
     FILE *socket_w = fdopen(socket_fd, "w");
 
     // TP2 TODO:END
-  for (unsigned int request_id = 0; request_id < num_request_per_client;
-      request_id++)
-  {
+    for (unsigned int request_id = 0; request_id < num_request_per_client;
+         request_id++)
+    {
 
-    // TP2 TODO
-    // Vous devez ici coder, conjointement avec le corps de send request,
-    // le protocole d'envoi de requête.
+      // TP2 TODO
+      // Vous devez ici coder, conjointement avec le corps de send request,
+      // le protocole d'envoi de requête.
 
-    send_request (ct->id, request_id, socket_fd);
+      send_request (ct->id, request_id, socket_fd);
 
-    // TP2 TODO:END
+      // TP2 TODO:END
 
-    /* Attendre un petit peu (0s-0.1s) pour simuler le calcul.  */
-    usleep (random () % (100 * 1000));
-    /* struct timespec delay;
-     * delay.tv_nsec = random () % (100 * 1000000);
-     * delay.tv_sec = 0;
-     * nanosleep (&delay, NULL); */
-  }
+      /* Attendre un petit peu (0s-0.1s) pour simuler le calcul.  */
+      usleep (random () % (100 * 1000));
+      struct timespec delay;
+      delay.tv_nsec = random () % (100 * 1000000);
+      delay.tv_sec = 0;
+      nanosleep (&delay, NULL);
+    }
 
-  return NULL;
+    return NULL;
 }
 
 
