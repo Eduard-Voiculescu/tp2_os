@@ -285,6 +285,8 @@ st_process_requests(server_thread *st, int socket_fd) {
     FILE *socket_r = fdopen(socket_fd, "r");
     FILE *socket_w = fdopen(socket_fd, "w");
 
+    int r_red
+
     while (true) {
         char cmd[4] = {NUL, NUL, NUL, NUL};
         if (!fread(cmd, 3, 1, socket_r))
@@ -399,10 +401,12 @@ st_process_requests(server_thread *st, int socket_fd) {
 
             /* On doit fermer le serveur et nous devons free toutes les structures. */
             /* On ferme le serveur - sad life - */
+            accepting_connections = 0;
             free(available);
             free(max);
             free(allocation);
             free(need);
+            pthread_attr_destroy(&lock);
             exit(0); // Exit successful
         } // fin END
 
