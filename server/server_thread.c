@@ -279,20 +279,6 @@ char* mystrsep(char** stringp, const char* delim)
     return start;
 }
 
-/* À utiliser lorsqu'on répond au client */
-void response_to_client (int socket_fd, int reponse[4], int len) {
-    int n;
-    /* Write a response to the client */
-    n = (int) write(socket_fd, reponse, (size_t) len);
-
-    if (n < 0) {
-        perror("ERROR writing to socket");
-        exit(1);
-    }
-}
-
-void st_process_requests_BEG(char *cmd, char *args);
-
 void
 st_process_requests(server_thread *st, int socket_fd) {
     // TODO: Remplacer le contenu de cette fonction
@@ -318,7 +304,7 @@ st_process_requests(server_thread *st, int socket_fd) {
 
         /* Pour la commande BEG */
         /* BEG est de la forme BEG _nbRessources_ _nbClients_*/
-        if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') {
+        if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') { // BEG
             printf("BEG:");
 
             /* Nous devons séparer le args en tokens --> i.e.: 12 10 */
@@ -340,11 +326,11 @@ st_process_requests(server_thread *st, int socket_fd) {
             free(args_2);
 
             break;
-        }
+        } // fin BEG
 
         /* Pour la commande PRO */
         /* PRO est de la forme PRO nb(r1) nb(r2) nb(r3) nb(r4) nb(r5) */
-        if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') {
+        if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') { // PRO
 
             /*
               * Il faut prendre la commande de PRO et ses arguments et les
@@ -363,10 +349,10 @@ st_process_requests(server_thread *st, int socket_fd) {
             reponse[2] = 'K';
 
             break;
-        }
+        } // fin PRO
 
         /* Pour la commande INI */
-        if(cmd[0] == 'I' && cmd [1] == 'N' && cmd[2] == 'I') {
+        if(cmd[0] == 'I' && cmd [1] == 'N' && cmd[2] == 'I') { // INI
             max[st->id] = malloc(num_resources * sizeof(int));
 
             /*
@@ -403,10 +389,10 @@ st_process_requests(server_thread *st, int socket_fd) {
             }
 
             break;
-        }
+        } // fin INI
 
         /* Pour la commande END */
-        if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') {
+        if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') { // END
 
             /* On doit fermer le serveur et nous devons free toutes les structures. */
             /* On ferme le serveur - sad life - */
@@ -415,7 +401,7 @@ st_process_requests(server_thread *st, int socket_fd) {
             free(allocation);
             free(need);
             exit(0); // Exit successful
-        }
+        } // fin END
 
         /* Pour la commande REQ */
         if (cmd[0] == 'R' && cmd[1] == 'E' && cmd[2] == 'Q') { // REQ
@@ -502,7 +488,7 @@ st_process_requests(server_thread *st, int socket_fd) {
             reponse[2] = 'K';
 
             break;
-        }
+        } // fin REQ
 
         /* Pour la commande CLO */
         if (cmd[0] == 'C' && cmd[1] == 'L' && cmd[2] == 'O') { // CLO
@@ -525,7 +511,7 @@ st_process_requests(server_thread *st, int socket_fd) {
             }
 
             break;
-        }
+        } // fin CLO
 
         printf("Thread %d received the command: %s%s", st->id, cmd, args);
         printf("Vous avez fait une requête que nous ne traitons pas. Sorry not sorry.");

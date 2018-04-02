@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <strings.h>
 
 int port_number = -1;
 int num_request_per_client = -1;
@@ -64,14 +65,36 @@ send_request (int client_id, int request_id, int socket_fd)
 void *
 ct_code (void *param)
 {
-  int socket_fd = -1;
-  client_thread *ct = (client_thread *) param;
+    int socket_fd = -1;
+    client_thread *ct = (client_thread *) param;
 
-  // TP2 TODO
-  // Connection au server.
-  // Vous devez ici faire l'initialisation des petits clients (`INI`).
-  // TP2 TODO:END
+    // TP2 TODO
+    // Connection au server.
 
+    /*
+     * Bout de code inspiré de http://liampaull.ca/courses/lectures/pdf/sockets.pdf
+     * Un large merci également est attribué à :
+     * https://www.tutorialspoint.com/unix_sockets/socket_client_example.htm
+     */
+    int client_socket = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr;
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port_number);
+    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    // Connect client socket to server.
+    if(connect(client_socket, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+        perror("Erreur lors de la connection.");
+        exit(1); // successful exit
+    }
+
+    // Vous devez ici faire l'initialisation des petits clients (`INI`).
+    /* Assez similaire à server_thread.c */
+    FILE *socket_r = fdopen(socket_fd, "r");
+    FILE *socket_w = fdopen(socket_fd, "w");
+
+    // TP2 TODO:END
   for (unsigned int request_id = 0; request_id < num_request_per_client;
       request_id++)
   {
