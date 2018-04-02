@@ -82,7 +82,8 @@ ct_code (void *param)
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port_number);
-    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    // arrenger ICI
+    addr.sin_addr.s_addr = htonl("localhost");
     // Connect client socket to server.
     if(connect(client_socket, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
         perror("Erreur lors de la connection.");
