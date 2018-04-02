@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /cygdrive/c/Users/Eddy/.CLion2017.3/system/cygwin_cmake/bin/cmake.exe
+CMAKE_COMMAND = /Applications/CLion.app/Contents/bin/cmake/bin/cmake
 
 # The command to remove a file.
-RM = /cygdrive/c/Users/Eddy/.CLion2017.3/system/cygwin_cmake/bin/cmake.exe -E remove -f
+RM = /Applications/CLion.app/Contents/bin/cmake/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os
+CMAKE_SOURCE_DIR = /Users/eduardvoiculescu/Documents/GitHub/tp2_os
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-de
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/cygdrive/c/Users/Eddy/.CLion2017.3/system/cygwin_cmake/bin/cmake.exe -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/Applications/CLion.app/Contents/bin/cmake/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/cygdrive/c/Users/Eddy/.CLion2017.3/system/cygwin_cmake/bin/cmake.exe -E echo No\ interactive\ CMake\ dialog\ available.
+	/Applications/CLion.app/Contents/bin/cmake/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles /Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/c/Users/Eddy/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/eduardvoiculescu/Documents/GitHub/tp2_os/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -123,114 +123,6 @@ tp2_os/fast:
 	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/build
 .PHONY : tp2_os/fast
 
-client/client_thread.o: client/client_thread.c.o
-
-.PHONY : client/client_thread.o
-
-# target to build an object file
-client/client_thread.c.o:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/client/client_thread.c.o
-.PHONY : client/client_thread.c.o
-
-client/client_thread.i: client/client_thread.c.i
-
-.PHONY : client/client_thread.i
-
-# target to preprocess a source file
-client/client_thread.c.i:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/client/client_thread.c.i
-.PHONY : client/client_thread.c.i
-
-client/client_thread.s: client/client_thread.c.s
-
-.PHONY : client/client_thread.s
-
-# target to generate assembly for a file
-client/client_thread.c.s:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/client/client_thread.c.s
-.PHONY : client/client_thread.c.s
-
-client/main.o: client/main.c.o
-
-.PHONY : client/main.o
-
-# target to build an object file
-client/main.c.o:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/client/main.c.o
-.PHONY : client/main.c.o
-
-client/main.i: client/main.c.i
-
-.PHONY : client/main.i
-
-# target to preprocess a source file
-client/main.c.i:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/client/main.c.i
-.PHONY : client/main.c.i
-
-client/main.s: client/main.c.s
-
-.PHONY : client/main.s
-
-# target to generate assembly for a file
-client/main.c.s:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/client/main.c.s
-.PHONY : client/main.c.s
-
-server/main.o: server/main.c.o
-
-.PHONY : server/main.o
-
-# target to build an object file
-server/main.c.o:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/server/main.c.o
-.PHONY : server/main.c.o
-
-server/main.i: server/main.c.i
-
-.PHONY : server/main.i
-
-# target to preprocess a source file
-server/main.c.i:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/server/main.c.i
-.PHONY : server/main.c.i
-
-server/main.s: server/main.c.s
-
-.PHONY : server/main.s
-
-# target to generate assembly for a file
-server/main.c.s:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/server/main.c.s
-.PHONY : server/main.c.s
-
-server/server_thread.o: server/server_thread.c.o
-
-.PHONY : server/server_thread.o
-
-# target to build an object file
-server/server_thread.c.o:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/server/server_thread.c.o
-.PHONY : server/server_thread.c.o
-
-server/server_thread.i: server/server_thread.c.i
-
-.PHONY : server/server_thread.i
-
-# target to preprocess a source file
-server/server_thread.c.i:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/server/server_thread.c.i
-.PHONY : server/server_thread.c.i
-
-server/server_thread.s: server/server_thread.c.s
-
-.PHONY : server/server_thread.s
-
-# target to generate assembly for a file
-server/server_thread.c.s:
-	$(MAKE) -f CMakeFiles/tp2_os.dir/build.make CMakeFiles/tp2_os.dir/server/server_thread.c.s
-.PHONY : server/server_thread.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -240,18 +132,6 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... tp2_os"
-	@echo "... client/client_thread.o"
-	@echo "... client/client_thread.i"
-	@echo "... client/client_thread.s"
-	@echo "... client/main.o"
-	@echo "... client/main.i"
-	@echo "... client/main.s"
-	@echo "... server/main.o"
-	@echo "... server/main.i"
-	@echo "... server/main.s"
-	@echo "... server/server_thread.o"
-	@echo "... server/server_thread.i"
-	@echo "... server/server_thread.s"
 .PHONY : help
 
 

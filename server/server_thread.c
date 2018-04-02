@@ -97,18 +97,14 @@ st_init ()
     // Initialise le nombre de clients connecté.
     nb_registered_clients = 0;
 
-    /* Vérification que le mutex est fonctionnel */
-    if(pthread_mutex_init(&lock, NULL) != 0) {
-        perror("Error initialisation of the mutex.");
-    }
-
     // Attend la connection d'un client et initialise les structures pour
     // l'algorithme du banquier.
 
     /* Appeler st_process_request() --> pour les PRO et BEG */
     //st_process_requests();
 
-    /* Initisalisation de structures de données pour l'algo du banquier */
+    /*
+     * Initisalisation de structures de données pour l'algo du banquier */
 
     available = (int *)malloc(num_resources * sizeof(int));
     max = (int **)malloc(nb_registered_clients * sizeof(int));
@@ -254,8 +250,8 @@ int resource_request_algorithm (int *request, int req) {
             }
             return 0;
         }
-        return 1;
     }
+    return 1;
 }
 
 /*
@@ -285,7 +281,7 @@ st_process_requests(server_thread *st, int socket_fd) {
     FILE *socket_r = fdopen(socket_fd, "r");
     FILE *socket_w = fdopen(socket_fd, "w");
 
-    int r_red
+    /* Implémenter un read de socket ? */
 
     while (true) {
         char cmd[4] = {NUL, NUL, NUL, NUL};
