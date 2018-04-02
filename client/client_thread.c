@@ -56,7 +56,7 @@ send_request (int client_id, int request_id, int socket_fd)
 
   fprintf (stdout, "Client %d is sending its %d request\n", client_id,
       request_id);
-
+    request_sent++;
   // TP2 TODO:END
 
 }
@@ -75,19 +75,7 @@ ct_code (void *param)
      * Bout de code inspiré de http://liampaull.ca/courses/lectures/pdf/sockets.pdf
      * Un large merci également est attribué à :
      * https://www.tutorialspoint.com/unix_sockets/socket_client_example.htm
-     */
-    int client_socket = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port_number);
-    // arrenger ICI
-    addr.sin_addr.s_addr = htonl("localhost");
-    // Connect client socket to server.
-    if(connect(client_socket, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-        perror("Erreur lors de la connection.");
-        exit(1); // successful exit
-    }
+    */
 
     // Vous devez ici faire l'initialisation des petits clients (`INI`).
     /* Assez similaire à server_thread.c */
@@ -128,9 +116,7 @@ ct_code (void *param)
 void
 ct_wait_server ()
 {
-
   // TP2 TODO: IMPORTANT code non valide.
-
   sleep (4);
 
   // TP2 TODO:END
@@ -141,7 +127,20 @@ ct_wait_server ()
 void
 ct_init (client_thread * ct)
 {
-  ct->id = count++;
+    ct->id = count++;
+
+    int client_socket = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port_number);
+    // arrenger ICI
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    // Connect client socket to server.
+    if(connect(client_socket, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+        perror("Erreur lors de la connection.");
+        exit(1); // successful exit
+    }
 }
 
 void
