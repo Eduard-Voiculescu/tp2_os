@@ -33,4 +33,4 @@ add_executable(tp2_os
         rapport.pdf
         rapport.tex
         README.md
-        tp2.tex)
+        )
