@@ -304,7 +304,7 @@ st_process_requests(server_thread *st, int socket_fd) {
 
         /* Pour la commande BEG */
         /* BEG est de la forme BEG _nbRessources_ _nbClients_*/
-        if(cmd[0] == 'B' && cmd[1] == 'E' && cmd[2] == 'G') { // BEG
+        if(strcmp(cmd, "BEG") == 0) { // BEG
             printf("BEG:");
 
             /* Nous devons séparer le args en tokens --> i.e.: 12 10 */
@@ -330,7 +330,8 @@ st_process_requests(server_thread *st, int socket_fd) {
 
         /* Pour la commande PRO */
         /* PRO est de la forme PRO nb(r1) nb(r2) nb(r3) nb(r4) nb(r5) */
-        if(cmd[0] == 'P' && cmd[1] == 'R' && cmd[2] == 'O') { // PRO
+        if(strcmp(cmd, "PRO") == 0) { // PRO
+            printf("PRO:");
 
             /*
               * Il faut prendre la commande de PRO et ses arguments et les
@@ -352,7 +353,8 @@ st_process_requests(server_thread *st, int socket_fd) {
         } // fin PRO
 
         /* Pour la commande INI */
-        if(cmd[0] == 'I' && cmd [1] == 'N' && cmd[2] == 'I') { // INI
+        if(strcmp(cmd, "INI") == 0) { // INI
+            printf("INI:");
             max[st->id] = malloc(num_resources * sizeof(int));
 
             /*
@@ -392,7 +394,8 @@ st_process_requests(server_thread *st, int socket_fd) {
         } // fin INI
 
         /* Pour la commande END */
-        if (cmd[0] == 'E' && cmd[1] == 'N' && cmd[2] == 'D') { // END
+        if (strcmp(cmd, "END") == 0) { // END
+            printf("END:");
 
             /* On doit fermer le serveur et nous devons free toutes les structures. */
             /* On ferme le serveur - sad life - */
@@ -404,7 +407,8 @@ st_process_requests(server_thread *st, int socket_fd) {
         } // fin END
 
         /* Pour la commande REQ */
-        if (cmd[0] == 'R' && cmd[1] == 'E' && cmd[2] == 'Q') { // REQ
+        if (strcmp(cmd, "REQ") == 0) { // REQ
+            printf("REQ:");
 
             request_processed++;
 
@@ -491,7 +495,8 @@ st_process_requests(server_thread *st, int socket_fd) {
         } // fin REQ
 
         /* Pour la commande CLO */
-        if (cmd[0] == 'C' && cmd[1] == 'L' && cmd[2] == 'O') { // CLO
+        if (strcmp(cmd, "CLO") == 0) { // CLO
+            printf("CLO");
 
             clients_ended++;
 
